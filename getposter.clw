@@ -13,9 +13,9 @@ Class2=CGetposterDlg
 Class3=CAboutDlg
 
 ResourceCount=4
-Resource1=IDD_ABOUTBOX
+Resource1=IDD_GETPOSTER_DIALOG
 Resource2=IDR_MAINFRAME
-Resource3=IDD_GETPOSTER_DIALOG
+Resource3=IDD_ABOUTBOX
 Class4=CSetupDlg
 Resource4=IDD_SETUP_DIALOG
 
@@ -64,7 +64,7 @@ Control5=IDC_RICHEDIT,RICHEDIT,1350631552
 Type=1
 Class=CSetupDlg
 ControlCount=17
-Control1=ID_SAVESETUP,button,1342242817
+Control1=IDOK,button,1342242817
 Control2=ID_CANCELSETUP,button,1342242816
 Control3=IDC_STATIC1,static,1342308352
 Control4=IDC_BUTTON_FINDFILE,button,1342242816

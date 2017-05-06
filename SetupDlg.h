@@ -39,6 +39,7 @@ protected:
 	//{{AFX_MSG(CSetupDlg)
 	afx_msg void OnButtonFindFile();
 	virtual BOOL OnInitDialog();
+	virtual void OnOK();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 	// Generated OLE dispatch map functions
