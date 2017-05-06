@@ -6,13 +6,7 @@
 --------------------Configuration: getposter - Win32 Debug--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP1BE.tmp" with contents
-[
-/nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Fp"Debug/getposter.pch" /Yu"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
-"C:\My Projects\GetPoster\SetupDlg.cpp"
-]
-Creating command line "cl.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP1BE.tmp" 
-Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP1BF.tmp" with contents
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP11D.tmp" with contents
 [
 /nologo /subsystem:windows /incremental:yes /pdb:"Debug/getposter.pdb" /debug /machine:I386 /out:"Debug/getposter.exe" /pdbtype:sept 
 ".\Debug\getposter.obj"
@@ -21,10 +15,8 @@ Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP1BF.tmp" with con
 ".\Debug\StdAfx.obj"
 ".\Debug\getposter.res"
 ]
-Creating command line "link.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP1BF.tmp"
+Creating command line "link.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP11D.tmp"
 <h3>Output Window</h3>
-Compiling...
-SetupDlg.cpp
 Linking...
 
 

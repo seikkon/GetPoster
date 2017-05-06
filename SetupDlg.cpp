@@ -104,6 +104,7 @@ void CSetupDlg::OnButtonFindFile()
 		strFileName.MakeLower();
 		if(strFileName=="ffmpeg.exe")
 		{
+//			struEnvSetup.strFfmpegDir=strFilePath;
 			SetDlgItemText(IDC_EDIT_FFMEPGPATH,strFilePath);
 		}
 		else
@@ -120,14 +121,17 @@ BOOL CSetupDlg::OnInitDialog()
 	
 	// TODO: Add extra initialization here
 	TCHAR strPath[BUFSIZE];
-	GetCurrentDirectory(BUFSIZE,strPath);	
-	CString strInitFile=strPath; 
-	strInitFile+="\\setup.def";
-	fstream _InitFile;
-	_InitFile.open(strInitFile,ios::in);
-	if(!_InitFile.is_open())
-	{	
+//	GetCurrentDirectory(BUFSIZE,strPath);
+	GetModuleFileName(NULL,strPath,BUFSIZE);
+	CString strInitFile(strPath);
+	strInitFile=strInitFile.Left(strInitFile.ReverseFind('\\'))+"\\setup.def"; 
 
+	ifstream _inFile;
+	ofstream _outFile;
+	_inFile.open(strInitFile,ios::in);
+	if(!_inFile.good())
+	{	
+		_inFile.close();
 		SetDlgItemText(IDC_EDIT_THUMBNAILWIDTH,struEnvSetup.strThumbnailWidth="200");
 		SetDlgItemText(IDC_EDIT_AUDIOPREFIX,struEnvSetup.strAudioPrefix="audio");
 		SetDlgItemText(IDC_EDIT_FFMEPGPATH,struEnvSetup.strFfmpegDir="");
@@ -135,41 +139,42 @@ BOOL CSetupDlg::OnInitDialog()
 		SetDlgItemText(IDC_EDIT_POSTERDIR,struEnvSetup.strPosterDir="VideoPoster");
 		SetDlgItemText(IDC_EDIT_THUMBNAILDIR,struEnvSetup.strThumbnailDir="Thumbnail");
 		SetDlgItemText(IDC_EDIT_VIDEOPREFIX,struEnvSetup.strVideoPrefix="video");
-		_InitFile.open(strInitFile,ios::out);
+		_outFile.open(strInitFile,ios::out);
 		{
-			if(!_InitFile.is_open()) 
+			if(!_outFile.good()) 
 			{
 				AfxMessageBox("创建设定档失败",MB_OK);
 			}
 			else
 			{
-				_InitFile<<"ThumbnailWidth="<<struEnvSetup.strThumbnailWidth<<endl;
-				_InitFile<<"AudioPrefix="<<struEnvSetup.strAudioPrefix<<endl;
-				_InitFile<<"FfmpegDir="<<struEnvSetup.strFfmpegDir<<endl;
-				_InitFile<<"ImagePrefix="<<struEnvSetup.strImagePrefix<<endl;
-				_InitFile<<"PosterDir="<<struEnvSetup.strPosterDir<<endl;
-				_InitFile<<"ThumbnailDir="<<struEnvSetup.strThumbnailDir<<endl;
-				_InitFile<<"VideoPrefix="<<struEnvSetup.strVideoPrefix<<endl;
-
+				_outFile<<"ThumbnailWidth="<<struEnvSetup.strThumbnailWidth.GetBuffer(struEnvSetup.strThumbnailWidth.GetLength())<<endl;
+				_outFile<<"AudioPrefix="<<struEnvSetup.strAudioPrefix.GetBuffer(struEnvSetup.strAudioPrefix.GetLength())<<endl;
+				_outFile<<"FfmpegDir="<<struEnvSetup.strFfmpegDir.GetBuffer(struEnvSetup.strFfmpegDir.GetLength())<<endl;
+				_outFile<<"ImagePrefix="<<struEnvSetup.strImagePrefix.GetBuffer(struEnvSetup.strImagePrefix.GetLength())<<endl;
+				_outFile<<"PosterDir="<<struEnvSetup.strPosterDir.GetBuffer(struEnvSetup.strPosterDir.GetLength())<<endl;
+				_outFile<<"ThumbnailDir="<<struEnvSetup.strThumbnailDir.GetBuffer(struEnvSetup.strThumbnailDir.GetLength())<<endl;
+				_outFile<<"VideoPrefix="<<struEnvSetup.strVideoPrefix.GetBuffer(struEnvSetup.strVideoPrefix.GetLength())<<endl<<flush;
+				_outFile.close();
 			}
 		}
 
 	}
 	else
 	{	
-		TCHAR strbuf[100];
-		while(!_InitFile.eof())
+		TCHAR strbuf[MAX_PATH];			
+		int nLine=0;
+		while(!_inFile.eof())
 		{
 
 			CString strInit[]={"ThumbnailWidth","AudioPrefix","FfmpegDir","ImagePrefix","PosterDir","ThumbnailDir","VideoPrefix"};
 
-			_InitFile.getline(strbuf,100);
-			CString strLine=strbuf;
-			CString strInitItem=strLine.Left(strLine.GetLength()-strLine.ReverseFind('=')-1);
-			CString strInitValue=strLine.Right(strLine.GetLength()-strLine.ReverseFind('=')-1);
+			_inFile.getline(strbuf,MAX_PATH);
+			CString strLine(strbuf);
+			CString strInitItem=strLine.Left(strLine.Find('='));
+			CString strInitValue=strLine.Right(strLine.GetLength()-strLine.Find('=')-1);
 //			for(int nChoice=0;nChoice<=sizeof(strInit)||strInit[nChoice]!=strInitItem;nChoice++){}；
-			for(int nChoice=0;nChoice<=sizeof(strInit)||strInit[nChoice]!=strInitItem;nChoice++){};
-			switch(nChoice)
+
+			switch(nLine)
 			{
 				case 0: SetDlgItemText(IDC_EDIT_THUMBNAILWIDTH,struEnvSetup.strThumbnailWidth=strInitValue); break;
 				case 1: SetDlgItemText(IDC_EDIT_AUDIOPREFIX,struEnvSetup.strAudioPrefix=strInitValue); break;
@@ -180,6 +185,7 @@ BOOL CSetupDlg::OnInitDialog()
 				case 6: SetDlgItemText(IDC_EDIT_VIDEOPREFIX,struEnvSetup.strVideoPrefix=strInitValue); break;
 
 			}
+			nLine++;
 		}
 		
 	}
@@ -190,20 +196,56 @@ BOOL CSetupDlg::OnInitDialog()
 void CSetupDlg::OnOK() 
 {
 	// TODO: Add extra validation here
-	BOOL bCheck=FALSE;
+	BOOL bCheck=TRUE;
 	int arryIDC[]={IDC_EDIT_THUMBNAILWIDTH,IDC_EDIT_AUDIOPREFIX,IDC_EDIT_FFMEPGPATH,IDC_EDIT_IMAGEPREFIX,IDC_EDIT_POSTERDIR,IDC_EDIT_THUMBNAILDIR,IDC_EDIT_VIDEOPREFIX};
-	for(int i=0;i<sizeof(arryIDC);i++)
+	ofstream _outFile;
+	for(int i=0;i<(sizeof(arryIDC)/sizeof(i));i++)
 	{
 		CString strText;
 		GetDlgItemText(arryIDC[i],strText);
-		if(strText!="") bCheck=TRUE;
+		if(strText=="") 
+		{
+			bCheck=FALSE;
+			break;
+		}
 	}
 	if(!bCheck)
 	{
-			
+		AfxMessageBox("设定不能空白！请重新输入",MB_OK);
 	}
 	else
 	{
+		TCHAR strPath[BUFSIZE];
+//		GetCurrentDirectory(BUFSIZE,strPath);
+		GetModuleFileName(NULL,strPath,BUFSIZE);
+		CString strInitFile(strPath);
+		strInitFile=strInitFile.Left(strInitFile.ReverseFind('\\'))+"\\setup.def"; 
+
+		_outFile.open(strInitFile,ios::out|ios::trunc);
+		if(!_outFile.good()) 
+		{
+			AfxMessageBox("设定档失败",MB_OK);
+		}
+		else
+		{
+			CString strText;
+			GetDlgItemText(arryIDC[0],strText);struEnvSetup.strThumbnailWidth=strText;
+			_outFile<<"ThumbnailWidth="<<struEnvSetup.strThumbnailWidth.GetBuffer(struEnvSetup.strThumbnailWidth.GetLength())<<endl;
+			GetDlgItemText(arryIDC[1],strText);struEnvSetup.strAudioPrefix=strText;
+			_outFile<<"AudioPrefix="<<struEnvSetup.strAudioPrefix.GetBuffer(struEnvSetup.strAudioPrefix.GetLength())<<endl;
+			GetDlgItemText(arryIDC[2],strText);struEnvSetup.strFfmpegDir=strText;
+			_outFile<<"FfmpegDir="<<struEnvSetup.strFfmpegDir.GetBuffer(struEnvSetup.strFfmpegDir.GetLength())<<endl;
+			GetDlgItemText(arryIDC[3],strText);struEnvSetup.strImagePrefix=strText;
+			_outFile<<"ImagePrefix="<<struEnvSetup.strImagePrefix.GetBuffer(struEnvSetup.strImagePrefix.GetLength())<<endl;
+			GetDlgItemText(arryIDC[4],strText);struEnvSetup.strPosterDir=strText;
+			_outFile<<"PosterDir="<<struEnvSetup.strPosterDir.GetBuffer(struEnvSetup.strPosterDir.GetLength())<<endl;
+			GetDlgItemText(arryIDC[5],strText);struEnvSetup.strThumbnailDir=strText;
+			_outFile<<"ThumbnailDir="<<struEnvSetup.strThumbnailDir.GetBuffer(struEnvSetup.strThumbnailDir.GetLength())<<endl;
+			GetDlgItemText(arryIDC[6],strText);struEnvSetup.strVideoPrefix=strText;
+			_outFile<<"VideoPrefix="<<struEnvSetup.strVideoPrefix.GetBuffer(struEnvSetup.strVideoPrefix.GetLength())<<endl<<flush;
+			_outFile.close();
+		}
+
 		CDialog::OnOK();
 	}
 
