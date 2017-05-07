@@ -228,6 +228,7 @@ void CSetupDlg::OnOK()
 		}
 		else
 		{
+			ENV *pStruEnv=&struEnvSetup;
 			CString strText;
 			GetDlgItemText(arryIDC[0],strText);struEnvSetup.strThumbnailWidth=strText;
 			_outFile<<"ThumbnailWidth="<<struEnvSetup.strThumbnailWidth.GetBuffer(struEnvSetup.strThumbnailWidth.GetLength())<<endl;

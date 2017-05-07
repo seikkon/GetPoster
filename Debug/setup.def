@@ -1,7 +1,0 @@
-ThumbnailWidth=200
-AudioPrefix=audio
-FfmpegDir=C:\tmp\ffmpeg.exe
-ImagePrefix=image
-PosterDir=VideoPoster
-ThumbnailDir=Thumbnail
-VideoPrefix=video

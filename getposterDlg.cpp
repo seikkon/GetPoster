@@ -137,7 +137,29 @@ BOOL CGetposterDlg::OnInitDialog()
     m_hRoot = m_tree.InsertItem("我的电脑",0,0);         //插入根节点  
     GetLogicalDrives(m_hRoot);                      //自定义函数 获取驱动  
     GetDriveDir(m_hRoot);                           //自定义函数 获取驱动子项  
-    m_tree.Expand(m_hRoot,TVE_EXPAND);              //展开或折叠子项列表 TVE_EXPAND展开列表  
+    m_tree.Expand(m_hRoot,TVE_EXPAND);              //展开或折叠子项列表 TVE_EXPAND展开列表 
+
+	TCHAR strBuf[MAX_PATH];
+	GetCurrentDirectory(MAX_PATH,strBuf);
+	CString strCurrentPath(strBuf);
+	CString strDir;
+	BOOL bExpand=TRUE;
+	{
+		if(strCurrentPath.Find('\\')!=-1)
+		{
+			strDir=strCurrentPath.Left(strCurrentPath.Find('\\'));
+			strCurrentPath=strCurrentPath.Mid(strCurrentPath.Find('\\')+1);
+		}
+		else
+		{
+			strDir=strCurrentPath;
+			bExpand=FALSE;
+			} 
+//		HTREEITEM
+//		m_tree.Expand(m_hRoot,TVE_EXPAND);
+//		m_tree.f
+//		m_tree.Expand()
+	}while(bExpand)	
 	
     return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE  
 
@@ -302,7 +324,7 @@ void CGetposterDlg::OnSelchangedTree(NMHDR* pNMHDR, LRESULT* pResult)
     {  
         bContinue = file.FindNextFile();  
         //if(!file.IsDirectory() && !file.IsDots())  
-		if(!file.IsDots())
+		if(!file.IsDirectory()&&!file.IsDots())
         {  
             SHFILEINFO info;  
             CString temp = str;  
