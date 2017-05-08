@@ -139,29 +139,63 @@ BOOL CGetposterDlg::OnInitDialog()
     GetDriveDir(m_hRoot);                           //自定义函数 获取驱动子项  
     m_tree.Expand(m_hRoot,TVE_EXPAND);              //展开或折叠子项列表 TVE_EXPAND展开列表 
 
+	HTREEITEM hParent=m_hRoot,hChild=NULL;
 	TCHAR strBuf[MAX_PATH];
-	GetCurrentDirectory(MAX_PATH,strBuf);
+	GetCurrentDirectory(MAX_PATH,strBuf);	
 	CString strCurrentPath(strBuf);
-	CString strDir;
-	BOOL bExpand=TRUE;
+	CString strDir="Dir";
+	BOOL bExpandAll=FALSE;	
+	CString strText="Text";
+
+	while(!bExpandAll)
 	{
-		if(strCurrentPath.Find('\\')!=-1)
+		int nFind=strCurrentPath.Find('\\');
+		if(nFind>0)
 		{
-			strDir=strCurrentPath.Left(strCurrentPath.Find('\\'));
+			strDir=strCurrentPath.Left(nFind);//strCurrentPath.Find('\\'));
 			strCurrentPath=strCurrentPath.Mid(strCurrentPath.Find('\\')+1);
+			hChild=m_tree.GetChildItem(hParent);			
+			while(strText!=strDir)
+			{
+				strText=m_tree.GetItemText(hChild);
+				if(strText.Right(1)=='\\') strText.TrimRight('\\');
+				if(strText==strDir)
+					m_tree.Expand(hChild,TVE_EXPAND) ;
+				else
+					hChild=m_tree.GetNextSiblingItem(hChild) ;
+			} // !strText==strDir)
+
 		}
 		else
 		{
+			strText.Empty();
 			strDir=strCurrentPath;
-			bExpand=FALSE;
+			hChild=m_tree.GetChildItem(hParent);
+			while(strText!=strDir)
+			{
+				strText=m_tree.GetItemText(hChild);
+				if(strText.Right(1)=='\\') strText.TrimRight('\\');
+				if(strText==strDir)
+				{
+					m_tree.Expand(hChild,TVE_EXPAND);//.GetFocus(hChild);
+					m_tree.SetFocus();
+					m_tree.SetItemState(hChild,LVIS_SELECTED, LVIS_FOCUSED | LVIS_SELECTED);
+
+					m_tree.SelectItem(hChild);
+
+				}
+				 else
+					hChild=m_tree.GetNextSiblingItem(hChild) ;
 			} 
-//		HTREEITEM
-//		m_tree.Expand(m_hRoot,TVE_EXPAND);
-//		m_tree.f
-//		m_tree.Expand()
-	}while(bExpand)	
+
+
+			bExpandAll=TRUE;
+		}
+		hParent=hChild;
+
+	} 
 	
-    return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE  
+    return FALSE;  // 除非将焦点设置到控件，否则返回 TRUE  
 
 }
 
