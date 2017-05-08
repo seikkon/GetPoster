@@ -152,7 +152,7 @@ BOOL CGetposterDlg::OnInitDialog()
 		int nFind=strCurrentPath.Find('\\');
 		if(nFind>0)
 		{
-			strDir=strCurrentPath.Left(nFind);//strCurrentPath.Find('\\'));
+			strDir=strCurrentPath.Left(nFind);
 			strCurrentPath=strCurrentPath.Mid(strCurrentPath.Find('\\')+1);
 			hChild=m_tree.GetChildItem(hParent);			
 			while(strText!=strDir)
@@ -163,7 +163,7 @@ BOOL CGetposterDlg::OnInitDialog()
 					m_tree.Expand(hChild,TVE_EXPAND) ;
 				else
 					hChild=m_tree.GetNextSiblingItem(hChild) ;
-			} // !strText==strDir)
+			} 
 
 		}
 		else
@@ -348,7 +348,20 @@ void CGetposterDlg::OnSelchangedTree(NMHDR* pNMHDR, LRESULT* pResult)
     TVITEM item = pNMTreeView->itemNew;  
     if(item.hItem == m_hRoot)  
         return;  
-    CString str = GetFullPath(item.hItem);  
+    CString str = GetFullPath(item.hItem);
+	m_strCurrentDir=str;
+	if(str.Right(1)=='\\')
+		str.TrimRight('\\');
+	int nIndex=1;
+	nIndex=str.Find('\\',nIndex);
+	while(nIndex>0)
+	{
+		str=str.Left(nIndex)+" >> "+str.Right(str.GetLength()-nIndex-1);
+		nIndex=str.Find('\\',nIndex);
+	}
+	SetDlgItemText(IDC_EDIT_PATH,str);
+
+	str = GetFullPath(item.hItem);
     if(str.Right(1) != "\\")  
 		str += "\\";  
     str += "*.*";  
@@ -375,9 +388,11 @@ void CGetposterDlg::OnSelchangedTree(NMHDR* pNMHDR, LRESULT* pResult)
 void CGetposterDlg::OnOK() 
 {
 	// TODO: Add extra validation here
+	CString arrayMediaExt[]={"jpg","jpeg"};
+	CString strMediaFileName;
+
 	CString strArq = "-i c:\\tmp\\testfile.mp4 -ss 00:00:01 -f image2 -vframes 1 c:\\tmp\\test.jpg";
 	HINSTANCE hNewExe = ShellExecute(NULL,"open","c:\\tmp\\ffmpeg.exe",strArq, NULL, NULL);
 
-	//HINSTANCE hNewExe = ShellExecute(NULL,"open","c:\\UltraISO.exe",NULL,NULL,SW_SHOW);
 	CDialog::OnOK();
 }

@@ -15,6 +15,7 @@ class CGetposterDlg : public CDialog
 {
 // Construction
 public:
+	CString m_strCurrentDir;
 	void AddSubDir(HTREEITEM hParent);
 	CString GetFullPath(HTREEITEM hCurrent);
 	void GetDriveDir(HTREEITEM hParent);
