@@ -8,12 +8,15 @@
 //#include "propkey.h"
 #include <vector>
 using namespace std;
+
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
 #endif
 
+//extern struct ENV struEnvSetup;
 /////////////////////////////////////////////////////////////////////////////
 // CAboutDlg dialog used for App About
 
@@ -387,18 +390,21 @@ void CGetposterDlg::OnSelchangedTree(NMHDR* pNMHDR, LRESULT* pResult)
 	*pResult = 0;
 }
 
+
 void CGetposterDlg::OnOK() 
 {
 	// TODO: Add extra validation here
-	vector<wstring> vecVideo,vecImage;//,vecAudio
-	GetMediaExtension(vecVideo,L"video");
-	GetMediaExtension(vecImage,L"picture");
+//	vector<wstring> vecVideo,vecImage;//,vecAudio
+//	GetMediaExtension(vecVideo,L"video");
+//	GetMediaExtension(vecImage,L"picture");
 
 	CString str = m_strCurrentDir;
     if(str.Right(1) != "\\")  
 		str += "\\";  
-	CreateDir(struEnvSetup.strPosterDir,str);
-	CreateDir(struEnvSetup.strThumbnailDir,str);
+
+
+ 	CreateDir(struEnvSetup.strPosterDir,str);
+ 	CreateDir(struEnvSetup.strThumbnailDir,str);
   
 
     if(str.Right(1) != "\\")  
@@ -426,110 +432,111 @@ void CGetposterDlg::OnOK()
 	CDialog::OnOK();
 }
 
-void CGetposterDlg::GetMediaExtension(vector<wstring>& vctExtensions, LPCWSTR lpVideoType)
-{
-    HKEY hKey = NULL;  
-    DWORD dwType  = REG_SZ;  
-    LONG retv = -1;  
-    const WCHAR *pVideoType = lpVideoType; //(NULL == lpVideoType) ? KIND_VIDEO : lpVideoType;  
-    const WCHAR *pRegPath =   
-        L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\KindMap";  
-	
-    retv = RegOpenKeyEx(HKEY_LOCAL_MACHINE, pRegPath, 0, KEY_READ, &hKey);  
-    if (ERROR_SUCCESS == retv)  
-    {  
-        TCHAR    achClass[MAX_PATH] = L"";  
-        DWORD    cchClassName = MAX_PATH;  
-        DWORD    cSubKeys = 0;  
-        DWORD    cbMaxSubKey = 0;  
-        DWORD    cchMaxClass = 0;  
-        DWORD    kNumber = 0;  
-        DWORD    cchMaxValue = 0;  
-        DWORD    cbMaxValueData = 0;  
-        DWORD    cbSecurityDescriptor = 0;  
-        FILETIME ftLastWriteTime;  
-		
-        retv = RegQueryInfoKey(  
-            hKey,  
-            achClass,  
-            &cchClassName,  
-            NULL,  
-            &cSubKeys,  
-            &cbMaxSubKey,  
-            &cchMaxClass,  
-            &kNumber,  
-            &cchMaxValue,  
-            &cbMaxValueData,  
-            &cbSecurityDescriptor,  
-            &ftLastWriteTime);  
-		
-        if (ERROR_SUCCESS == retv)  
-        {  
-            TCHAR szValueName[MAX_PATH] = { 0 };  
-            TCHAR szValueData[MAX_PATH] = { 0 };  
-            DWORD dwcchValueName = MAX_PATH;  
-            DWORD dwcchValueData = MAX_PATH;  
-			
-            for (int i = 0; i < (int)kNumber; ++i)  
-            {  
-                dwcchValueName = MAX_PATH;  
-                ZeroMemory(szValueName, sizeof(TCHAR) * MAX_PATH);  
-				
-                retv = RegEnumValue(  
-                    hKey,  
-                    i,  
-                    szValueName,  
-                    &dwcchValueName,  
-                    NULL,  
-                    NULL,  
-                    NULL,  
-                    NULL);  
-				
-                if (ERROR_SUCCESS == retv)  
-                {  
-                    dwType = REG_SZ;  
-                    dwcchValueData = MAX_PATH;  
-                    ZeroMemory(szValueData, sizeof(TCHAR) * MAX_PATH);  
-					
-                    retv = RegQueryValueEx(  
-                        hKey,  
-                        szValueName,  
-                        NULL,  
-                        &dwType,  
-                        (PBYTE)szValueData,  
-                        &dwcchValueData);  
-					
-                    if (ERROR_SUCCESS == retv)  
-                    {  
-                        if (0 == _wcsicmp(szValueData, pVideoType))  
-                        {  
-                            vctExtensions.push_back(wstring(szValueName));  
-                        }  
-                    }  
-                }  
-            }  
-        }  
-    }  
-	
-    if (NULL != hKey)  
-    {  
-        RegCloseKey(hKey);  
-    }  
-}
-
 BOOL CGetposterDlg::CreateDir(CString strDirName, CString strCurrentPath)
 {
     CFileFind file; 
 	BOOL bExsist=file.FindFile(strCurrentPath+strDirName,0);
 	if(bExsist!=FALSE)
 	{
-		BOOL bFlag = CreateDirectory(szDirName, NULL); 
+		BOOL bFlag = CreateDirectory(strDirName, NULL); 
 		if(bFlag==TRUE)
 		{
 			DWORD err = GetLastError();		
-			AfxMessageBox("创建文件夹错误！"，MB_OK);
+//			AfxMessageBox("创建文件夹错误！"，MB_OK);
 			return FALSE;
 		}
 	}
 	return TRUE;
 }
+
+//void CGetposterDlg::GetMediaExtension(vector<wstring>& vctExtensions, LPCWSTR lpVideoType)  
+void CGetposterDlg::GetMediaExtension(vector<CString>& vctExtensions, LPCTSTR lpVideoType)
+{  
+	HKEY hKey = NULL;  
+	DWORD dwType  = REG_SZ;  
+	LONG retv = -1;  
+	const TCHAR *pVideoType = lpVideoType;//(NULL == lpVideoType) ? KIND_VIDEO : lpVideoType;  
+	const TCHAR *pRegPath =   
+		_T("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\KindMap");  
+	
+	retv = RegOpenKeyEx(HKEY_LOCAL_MACHINE, pRegPath, 0, KEY_READ, &hKey);  
+	if (ERROR_SUCCESS == retv)  
+	{  
+		TCHAR    achClass[MAX_PATH] = _T("");  
+		DWORD    cchClassName = MAX_PATH;  
+		DWORD    cSubKeys = 0;  
+		DWORD    cbMaxSubKey = 0;  
+		DWORD    cchMaxClass = 0;  
+		DWORD    kNumber = 0;  
+		DWORD    cchMaxValue = 0;  
+		DWORD    cbMaxValueData = 0;  
+		DWORD    cbSecurityDescriptor = 0;  
+		FILETIME ftLastWriteTime;  
+		
+		retv = RegQueryInfoKey(  
+			hKey,  
+			achClass,  
+			&cchClassName,  
+			NULL,  
+			&cSubKeys,  
+			&cbMaxSubKey,  
+			&cchMaxClass,  
+			&kNumber,  
+			&cchMaxValue,  
+			&cbMaxValueData,  
+			&cbSecurityDescriptor,  
+			&ftLastWriteTime);  
+		
+		if (ERROR_SUCCESS == retv)  
+		{  
+			TCHAR szValueName[MAX_PATH] = { 0 };  
+			TCHAR szValueData[MAX_PATH] = { 0 };  
+			DWORD dwcchValueName = MAX_PATH;  
+			DWORD dwcchValueData = MAX_PATH;  
+			
+			for (int i = 0; i < (int)kNumber; ++i)  
+			{  
+				dwcchValueName = MAX_PATH;  
+				ZeroMemory(szValueName, sizeof(TCHAR) * MAX_PATH);  
+				
+				retv = RegEnumValue(  
+					hKey,  
+					i,  
+					szValueName,  
+					&dwcchValueName,  
+					NULL,  
+					NULL,  
+					NULL,  
+					NULL);  
+				
+				if (ERROR_SUCCESS == retv)  
+				{  
+					dwType = REG_SZ;  
+					dwcchValueData = MAX_PATH;  
+					ZeroMemory(szValueData, sizeof(TCHAR) * MAX_PATH);  
+					
+					retv = RegQueryValueEx(  
+						hKey,  
+						szValueName,  
+						NULL,  
+						&dwType,  
+						(PBYTE)szValueData,  
+						&dwcchValueData);  
+					
+					if (ERROR_SUCCESS == retv)  
+					{  
+						if (0 == _stricmp(szValueData, pVideoType))  
+						{  
+							vctExtensions.push_back(CString(szValueName));  
+						}  
+					}  
+				}  
+			}  
+		}  
+	}  
+	
+	if (NULL != hKey)  
+	{  
+		RegCloseKey(hKey);  
+	}  
+}  

@@ -13,18 +13,30 @@
 // CGetposterDlg dialog
 #include <vector>
 using namespace std;
+
+extern struct ENV {
+	CString strFfmpegDir;
+	CString strThumbnailDir;
+	CString strPosterDir;
+	CString strVideoPrefix;
+	CString strAudioPrefix;
+	CString strImagePrefix;
+	CString strThumbnailWidth;
+} struEnvSetup;  
+
+
 class CGetposterDlg : public CDialog
 {
 // Construction
 public:
 	BOOL CreateDir(CString strDirName,CString CurrentPath);
-	void GetMediaExtension(vector<wstring>& vctExtensions, LPCWSTR lpVideoType);
-
 	CString m_strCurrentDir;
 	void AddSubDir(HTREEITEM hParent);
 	CString GetFullPath(HTREEITEM hCurrent);
 	void GetDriveDir(HTREEITEM hParent);
 	void GetLogicalDrives(HTREEITEM hParent);
+	void GetMediaExtension(vector<CString>& vctExtensions, LPCTSTR lpVideoType);
+
 	CGetposterDlg(CWnd* pParent = NULL);	// standard constructor
 
 // Dialog Data

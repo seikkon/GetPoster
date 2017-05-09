@@ -6,37 +6,49 @@
 --------------------Configuration: getposter - Win32 Debug--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP109.tmp" with contents
+Creating command line "rc.exe /l 0x804 /fo"Debug/getposter.res" /d "_DEBUG" /d "_AFXDLL" "C:\My Projects\GetPoster\getposter.rc"" 
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP129.tmp" with contents
 [
-/nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_UNICODE" /D "UNICODE" /Fp"Debug/getposter.pch" /Yu"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+/nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /FR"Debug/" /Fp"Debug/getposter.pch" /Yu"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"C:\My Projects\GetPoster\getposter.cpp"
 "C:\My Projects\GetPoster\getposterDlg.cpp"
+"C:\My Projects\GetPoster\SetupDlg.cpp"
 ]
-Creating command line "cl.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP109.tmp" 
+Creating command line "cl.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP129.tmp" 
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP12A.tmp" with contents
+[
+/nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /FR"Debug/" /Fp"Debug/getposter.pch" /Yc"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"C:\My Projects\GetPoster\StdAfx.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP12A.tmp" 
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP12B.tmp" with contents
+[
+/nologo /subsystem:windows /incremental:yes /pdb:"Debug/getposter.pdb" /debug /machine:I386 /out:"Debug/getposter.exe" /pdbtype:sept 
+".\Debug\getposter.obj"
+".\Debug\getposterDlg.obj"
+".\Debug\SetupDlg.obj"
+".\Debug\StdAfx.obj"
+".\Debug\getposter.res"
+]
+Creating command line "link.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP12B.tmp"
 <h3>Output Window</h3>
+Compiling resources...
 Compiling...
+StdAfx.cpp
+Compiling...
+getposter.cpp
 getposterDlg.cpp
-C:\My Projects\GetPoster\getposterDlg.cpp(263) : error C2664: 'GetLogicalDriveStringsW' : cannot convert parameter 2 from 'char *' to 'unsigned short *'
-        Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-C:\My Projects\GetPoster\getposterDlg.cpp(267) : error C2664: 'struct _TREEITEM *__thiscall CTreeCtrl::InsertItem(const unsigned short *,struct _TREEITEM *,struct _TREEITEM *)' : cannot convert parameter 1 from 'char *' to 'const unsigned short *'
-        Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-C:\My Projects\GetPoster\getposterDlg.cpp(380) : error C2664: 'int __thiscall CString::Find(unsigned short) const' : cannot convert parameter 1 from 'char [4]' to 'unsigned short'
-        This conversion requires a reinterpret_cast, a C-style cast or function-style cast
-C:\My Projects\GetPoster\getposterDlg.cpp(416) : error C2664: 'int __thiscall CString::Find(unsigned short) const' : cannot convert parameter 1 from 'char [4]' to 'unsigned short'
-        This conversion requires a reinterpret_cast, a C-style cast or function-style cast
-C:\My Projects\GetPoster\getposterDlg.cpp(424) : error C2664: 'ShellExecuteW' : cannot convert parameter 2 from 'char [5]' to 'const unsigned short *'
-        Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-C:\My Projects\GetPoster\getposterDlg.cpp(526) : error C2065: 'szDirName' : undeclared identifier
-C:\My Projects\GetPoster\getposterDlg.cpp(530) : error C2018: unknown character '0xa3'
-C:\My Projects\GetPoster\getposterDlg.cpp(530) : error C2018: unknown character '0xac'
-C:\My Projects\GetPoster\getposterDlg.cpp(530) : error C2143: syntax error : missing ')' before 'constant'
-C:\My Projects\GetPoster\getposterDlg.cpp(530) : error C2665: 'AfxMessageBox' : none of the 2 overloads can convert parameter 1 from type 'char [17]'
-C:\My Projects\GetPoster\getposterDlg.cpp(530) : error C2059: syntax error : ')'
-Error executing cl.exe.
+SetupDlg.cpp
+Generating Code...
+Linking...
+Creating command line "bscmake.exe /nologo /o"Debug/getposter.bsc"  ".\Debug\StdAfx.sbr" ".\Debug\getposter.sbr" ".\Debug\getposterDlg.sbr" ".\Debug\SetupDlg.sbr""
+Creating browse info file...
+<h3>Output Window</h3>
 
 
 
 <h3>Results</h3>
-getposterDlg.obj - 11 error(s), 0 warning(s)
+getposter.exe - 0 error(s), 0 warning(s)
 </pre>
 </body>
 </html>
