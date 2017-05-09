@@ -2,7 +2,7 @@
 
 [General Info]
 Version=1
-LastClass=CSetupDlg
+LastClass=CGetposterDlg
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "getposter.h"
@@ -13,9 +13,9 @@ Class2=CGetposterDlg
 Class3=CAboutDlg
 
 ResourceCount=4
-Resource1=IDD_GETPOSTER_DIALOG
+Resource1=IDD_ABOUTBOX
 Resource2=IDR_MAINFRAME
-Resource3=IDD_ABOUTBOX
+Resource3=IDD_GETPOSTER_DIALOG
 Class4=CSetupDlg
 Resource4=IDD_SETUP_DIALOG
 
@@ -30,7 +30,7 @@ Type=0
 HeaderFile=getposterDlg.h
 ImplementationFile=getposterDlg.cpp
 Filter=D
-LastObject=CGetposterDlg
+LastObject=IDC_EDIT_PATH
 BaseClass=CDialog
 VirtualFilter=dWC
 

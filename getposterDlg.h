@@ -1,6 +1,7 @@
 // getposterDlg.h : header file
 //
 
+
 #if !defined(AFX_GETPOSTERDLG_H__47443455_53D1_41A2_8ABD_9BD0E0ACE3C0__INCLUDED_)
 #define AFX_GETPOSTERDLG_H__47443455_53D1_41A2_8ABD_9BD0E0ACE3C0__INCLUDED_
 
@@ -10,11 +11,15 @@
 
 /////////////////////////////////////////////////////////////////////////////
 // CGetposterDlg dialog
-
+#include <vector>
+using namespace std;
 class CGetposterDlg : public CDialog
 {
 // Construction
 public:
+	BOOL CreateDir(CString strDirName,CString CurrentPath);
+	void GetMediaExtension(vector<wstring>& vctExtensions, LPCWSTR lpVideoType);
+
 	CString m_strCurrentDir;
 	void AddSubDir(HTREEITEM hParent);
 	CString GetFullPath(HTREEITEM hCurrent);

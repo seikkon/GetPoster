@@ -7,7 +7,6 @@
 #include <iostream>
 #include <fstream> 
 #include <cstdlib> 
-#include <VECTOR>
 #include <afx.h>
 
 using namespace std;
@@ -23,15 +22,7 @@ static char THIS_FILE[] = __FILE__;
 #define BUFSIZE MAX_PATH
 
 
-struct ENV {
-	CString strFfmpegDir;
-	CString strThumbnailDir;
-	CString strPosterDir;
-	CString strVideoPrefix;
-	CString strAudioPrefix;
-	CString strImagePrefix;
-	CString strThumbnailWidth;
-} struEnvSetup;
+
 
 CSetupDlg::CSetupDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CSetupDlg::IDD, pParent)

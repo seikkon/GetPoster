@@ -5,7 +5,9 @@
 #include "getposter.h"
 #include "getposterDlg.h"
 #include "SetupDlg.h"
-
+//#include "propkey.h"
+#include <vector>
+using namespace std;
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -134,7 +136,7 @@ BOOL CGetposterDlg::OnInitDialog()
 
     m_list.SetImageList(&m_ImageList,LVSIL_NORMAL);  //为树形控件设置图像序列     
     m_tree.ModifyStyle(NULL,TVS_HASBUTTONS|TVS_HASLINES|TVS_LINESATROOT|TVS_EDITLABELS);  
-    m_hRoot = m_tree.InsertItem("我的电脑",0,0);         //插入根节点  
+    m_hRoot = m_tree.InsertItem(_T("我的电脑"),0,0);         //插入根节点  
     GetLogicalDrives(m_hRoot);                      //自定义函数 获取驱动  
     GetDriveDir(m_hRoot);                           //自定义函数 获取驱动子项  
     m_tree.Expand(m_hRoot,TVE_EXPAND);              //展开或折叠子项列表 TVE_EXPAND展开列表 
@@ -388,11 +390,146 @@ void CGetposterDlg::OnSelchangedTree(NMHDR* pNMHDR, LRESULT* pResult)
 void CGetposterDlg::OnOK() 
 {
 	// TODO: Add extra validation here
-	CString arrayMediaExt[]={"jpg","jpeg"};
-	CString strMediaFileName;
+	vector<wstring> vecVideo,vecImage;//,vecAudio
+	GetMediaExtension(vecVideo,L"video");
+	GetMediaExtension(vecImage,L"picture");
 
+	CString str = m_strCurrentDir;
+    if(str.Right(1) != "\\")  
+		str += "\\";  
+	CreateDir(struEnvSetup.strPosterDir,str);
+	CreateDir(struEnvSetup.strThumbnailDir,str);
+  
+
+    if(str.Right(1) != "\\")  
+		str += "\\";  
+    str += "*.*";  
+	CFileFind file;
+    BOOL bContinue = file.FindFile(str);  
+    while(bContinue)  
+    {  
+        bContinue = file.FindNextFile();  
+		if(!file.IsDirectory()&&!file.IsDots())
+        {  
+            SHFILEINFO info;  
+            CString temp = str;  
+            int index = temp.Find("*.*");  
+            temp.Delete(index,3);  
+            SHGetFileInfo(temp + file.GetFileName(),0,&info,sizeof(&info),SHGFI_DISPLAYNAME | SHGFI_ICON);  
+            int i = m_ImageList.Add(info.hIcon);  
+            m_list.InsertItem(i,info.szDisplayName,i);  
+        }  
+    }  
 	CString strArq = "-i c:\\tmp\\testfile.mp4 -ss 00:00:01 -f image2 -vframes 1 c:\\tmp\\test.jpg";
 	HINSTANCE hNewExe = ShellExecute(NULL,"open","c:\\tmp\\ffmpeg.exe",strArq, NULL, NULL);
 
 	CDialog::OnOK();
+}
+
+void CGetposterDlg::GetMediaExtension(vector<wstring>& vctExtensions, LPCWSTR lpVideoType)
+{
+    HKEY hKey = NULL;  
+    DWORD dwType  = REG_SZ;  
+    LONG retv = -1;  
+    const WCHAR *pVideoType = lpVideoType; //(NULL == lpVideoType) ? KIND_VIDEO : lpVideoType;  
+    const WCHAR *pRegPath =   
+        L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\KindMap";  
+	
+    retv = RegOpenKeyEx(HKEY_LOCAL_MACHINE, pRegPath, 0, KEY_READ, &hKey);  
+    if (ERROR_SUCCESS == retv)  
+    {  
+        TCHAR    achClass[MAX_PATH] = L"";  
+        DWORD    cchClassName = MAX_PATH;  
+        DWORD    cSubKeys = 0;  
+        DWORD    cbMaxSubKey = 0;  
+        DWORD    cchMaxClass = 0;  
+        DWORD    kNumber = 0;  
+        DWORD    cchMaxValue = 0;  
+        DWORD    cbMaxValueData = 0;  
+        DWORD    cbSecurityDescriptor = 0;  
+        FILETIME ftLastWriteTime;  
+		
+        retv = RegQueryInfoKey(  
+            hKey,  
+            achClass,  
+            &cchClassName,  
+            NULL,  
+            &cSubKeys,  
+            &cbMaxSubKey,  
+            &cchMaxClass,  
+            &kNumber,  
+            &cchMaxValue,  
+            &cbMaxValueData,  
+            &cbSecurityDescriptor,  
+            &ftLastWriteTime);  
+		
+        if (ERROR_SUCCESS == retv)  
+        {  
+            TCHAR szValueName[MAX_PATH] = { 0 };  
+            TCHAR szValueData[MAX_PATH] = { 0 };  
+            DWORD dwcchValueName = MAX_PATH;  
+            DWORD dwcchValueData = MAX_PATH;  
+			
+            for (int i = 0; i < (int)kNumber; ++i)  
+            {  
+                dwcchValueName = MAX_PATH;  
+                ZeroMemory(szValueName, sizeof(TCHAR) * MAX_PATH);  
+				
+                retv = RegEnumValue(  
+                    hKey,  
+                    i,  
+                    szValueName,  
+                    &dwcchValueName,  
+                    NULL,  
+                    NULL,  
+                    NULL,  
+                    NULL);  
+				
+                if (ERROR_SUCCESS == retv)  
+                {  
+                    dwType = REG_SZ;  
+                    dwcchValueData = MAX_PATH;  
+                    ZeroMemory(szValueData, sizeof(TCHAR) * MAX_PATH);  
+					
+                    retv = RegQueryValueEx(  
+                        hKey,  
+                        szValueName,  
+                        NULL,  
+                        &dwType,  
+                        (PBYTE)szValueData,  
+                        &dwcchValueData);  
+					
+                    if (ERROR_SUCCESS == retv)  
+                    {  
+                        if (0 == _wcsicmp(szValueData, pVideoType))  
+                        {  
+                            vctExtensions.push_back(wstring(szValueName));  
+                        }  
+                    }  
+                }  
+            }  
+        }  
+    }  
+	
+    if (NULL != hKey)  
+    {  
+        RegCloseKey(hKey);  
+    }  
+}
+
+BOOL CGetposterDlg::CreateDir(CString strDirName, CString strCurrentPath)
+{
+    CFileFind file; 
+	BOOL bExsist=file.FindFile(strCurrentPath+strDirName,0);
+	if(bExsist!=FALSE)
+	{
+		BOOL bFlag = CreateDirectory(szDirName, NULL); 
+		if(bFlag==TRUE)
+		{
+			DWORD err = GetLastError();		
+			AfxMessageBox("创建文件夹错误！"，MB_OK);
+			return FALSE;
+		}
+	}
+	return TRUE;
 }
