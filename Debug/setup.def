@@ -1,0 +1,7 @@
+'THUMBNAILWIDTH' '200' '缩图宽度'
+'AUDIOPREFIX' 'audio' '音档前置'
+'FFMEPGPATH' 'c:' 'FFMEPG档'
+'IMAGEPREFIX' 'image' '图档前置'
+'POSTERDIR' 'Poster' '海报目录'
+'THUMBNAILDIR' 'Thumbnail' '缩图目录'
+'VIDEOPREFIX' 'video' '视频前置'

@@ -5,10 +5,11 @@
 #include "getposter.h"
 #include "getposterDlg.h"
 #include "SetupDlg.h"
-//#include "propkey.h"
-#include <vector>
+#include <fstream> 
 using namespace std;
 
+
+#define INITEFILE "setup.def"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -122,7 +123,6 @@ BOOL CGetposterDlg::OnInitDialog()
 			pSysMenu->AppendMenu(MF_STRING, IDM_SETUPDLG, strSetupDialog);			
 			pSysMenu->AppendMenu(MF_SEPARATOR);
 			pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
-
 		}
 	}
 
@@ -144,6 +144,9 @@ BOOL CGetposterDlg::OnInitDialog()
     GetDriveDir(m_hRoot);                           //自定义函数 获取驱动子项  
     m_tree.Expand(m_hRoot,TVE_EXPAND);              //展开或折叠子项列表 TVE_EXPAND展开列表 
 
+	vector<ENV> vecInit;
+	DoInitENV("setup.def",vecInit);
+
 	HTREEITEM hParent=m_hRoot,hChild=NULL;
 	TCHAR strBuf[MAX_PATH];
 	GetCurrentDirectory(MAX_PATH,strBuf);	
@@ -151,7 +154,6 @@ BOOL CGetposterDlg::OnInitDialog()
 	CString strDir="Dir";
 	BOOL bExpandAll=FALSE;	
 	CString strText="Text";
-
 	while(!bExpandAll)
 	{
 		int nFind=strCurrentPath.Find('\\');
@@ -192,7 +194,6 @@ BOOL CGetposterDlg::OnInitDialog()
 				 else
 					hChild=m_tree.GetNextSiblingItem(hChild) ;
 			} 
-
 
 			bExpandAll=TRUE;
 		}
@@ -390,21 +391,22 @@ void CGetposterDlg::OnSelchangedTree(NMHDR* pNMHDR, LRESULT* pResult)
 	*pResult = 0;
 }
 
+extern struct ENV struEnvSetup;
 
 void CGetposterDlg::OnOK() 
 {
 	// TODO: Add extra validation here
-//	vector<wstring> vecVideo,vecImage;//,vecAudio
-//	GetMediaExtension(vecVideo,L"video");
-//	GetMediaExtension(vecImage,L"picture");
+	vector<CString> vecVideo,vecImage;//,vecAudio
+	GetMediaExtension(vecVideo,"video");
+	GetMediaExtension(vecImage,"picture");
+	
 
 	CString str = m_strCurrentDir;
     if(str.Right(1) != "\\")  
 		str += "\\";  
 
-
- 	CreateDir(struEnvSetup.strPosterDir,str);
- 	CreateDir(struEnvSetup.strThumbnailDir,str);
+// 	CreateDir(struEnvSetup.strPosterDir,str);
+// 	CreateDir(struEnvSetup.strThumbnailDir,str);
   
 
     if(str.Right(1) != "\\")  
@@ -435,18 +437,18 @@ void CGetposterDlg::OnOK()
 BOOL CGetposterDlg::CreateDir(CString strDirName, CString strCurrentPath)
 {
     CFileFind file; 
-	BOOL bExsist=file.FindFile(strCurrentPath+strDirName,0);
-	if(bExsist!=FALSE)
-	{
-		BOOL bFlag = CreateDirectory(strDirName, NULL); 
+//	BOOL bExsist=file.FindFile(strCurrentPath+strDirName,0);
+//	if(bExsist!=FALSE)
+//	{
+		BOOL bFlag = CreateDirectory(strCurrentPath+strDirName, NULL); 
 		if(bFlag==TRUE)
 		{
 			DWORD err = GetLastError();		
 //			AfxMessageBox("创建文件夹错误！"，MB_OK);
 			return FALSE;
 		}
-	}
-	return TRUE;
+//	}
+ 	return TRUE;
 }
 
 //void CGetposterDlg::GetMediaExtension(vector<wstring>& vctExtensions, LPCWSTR lpVideoType)  
@@ -540,3 +542,60 @@ void CGetposterDlg::GetMediaExtension(vector<CString>& vctExtensions, LPCTSTR lp
 		RegCloseKey(hKey);  
 	}  
 }  
+
+BOOL CGetposterDlg::DoInitENV(CString strFileName,vector<ENV>& vecInit)
+{
+//	pstruENV=new ENV;
+	TCHAR strPath[MAX_PATH];
+	GetModuleFileName(NULL,strPath,MAX_PATH);
+	CString strInitFile(strPath);
+	strInitFile=strInitFile.Left(strInitFile.ReverseFind('\\')+1)+strFileName; 
+	
+	ifstream _inFile;
+	_inFile.open(strInitFile,ios::in);
+	if(!_inFile.good())
+	{	
+		_inFile.close();
+		CreatInitFile(strFileName,vecInit);
+	}
+	
+	TCHAR strBuf[MAX_PATH];			
+	struct ENV struInitENV;
+	while(!_inFile.eof())
+	{
+		_inFile.getline(strBuf,MAX_PATH);
+		CString strLine(strBuf);
+		int nPos=0;
+		strLine.TrimLeft('\'');struInitENV.strCtrlID=strLine.Left(nPos=strLine.Find('\'',1));strLine=strLine.Right(strLine.GetLength()-nPos-2);
+		strLine.TrimLeft('\'');struInitENV.strValue=strLine.Left(nPos=strLine.Find('\'',1));strLine=strLine.Right(strLine.GetLength()-nPos-2);
+		strLine.TrimLeft('\'');strLine.TrimRight('\'');struInitENV.strContent=strLine;
+		vecInit.push_back(struInitENV);
+	}
+
+	return TRUE;
+}
+
+void CGetposterDlg::CreatInitFile(CString strFileName,vector<ENV>& vecInit)
+{
+	TCHAR strPath[MAX_PATH];
+	GetModuleFileName(NULL,strPath,MAX_PATH);
+	CString strInitFile(strPath);
+	strInitFile=strInitFile.Left(strInitFile.ReverseFind('\\')+1)+strFileName; 
+	
+	ofstream _outFile;
+	if(!_outFile.good()) 
+	{
+		AfxMessageBox("创建设定档失败",MB_OK);
+	}
+	else
+	{
+		_outFile<<"\'THUMBNAILWIDTH\' \'200\' \'缩图宽度\'"<<endl;
+		_outFile<<"\'AUDIOPREFIX\' \'audio\' \'音档前置\'"<<endl;
+		_outFile<<"\'FFMEPGPATH\' \'C:\' \'FFMEPG档\'"<<endl;
+		_outFile<<"\'IMAGEPREFIX\' \'image\' \'图档前置\'"<<endl;
+		_outFile<<"\'POSTERDIR\' \'Poster\' \'海报目录\'"<<endl;
+		_outFile<<"\'THUMBNAILDIR\' \'Thumbnail\' \'缩图目录\'"<<endl;
+		_outFile<<"\'VIDEOPREFIX\' \'video\' \'视频前置\'"<<endl<<flush;
+		_outFile.close();
+	}
+}

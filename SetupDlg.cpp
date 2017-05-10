@@ -19,18 +19,10 @@ static char THIS_FILE[] = __FILE__;
 
 /////////////////////////////////////////////////////////////////////////////
 // CSetupDlg dialog
-#define BUFSIZE MAX_PATH
+//#define BUFSIZE MAX_PATH
 
 
-struct ENV {
-	CString strFfmpegDir;
-	CString strThumbnailDir;
-	CString strPosterDir;
-	CString strVideoPrefix;
-	CString strAudioPrefix;
-	CString strImagePrefix;
-	CString strThumbnailWidth;
-} struEnvSetup;  
+  
 
 CSetupDlg::CSetupDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CSetupDlg::IDD, pParent)
@@ -117,8 +109,10 @@ void CSetupDlg::OnButtonFindFile()
 BOOL CSetupDlg::OnInitDialog() 
 {
 	CDialog::OnInitDialog();
-	
+
 	// TODO: Add extra initialization here
+
+/*
 	TCHAR strPath[BUFSIZE];
 //	GetCurrentDirectory(BUFSIZE,strPath);
 	GetModuleFileName(NULL,strPath,BUFSIZE);
@@ -188,6 +182,7 @@ BOOL CSetupDlg::OnInitDialog()
 		}
 		
 	}
+*/
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
 }
@@ -195,6 +190,7 @@ BOOL CSetupDlg::OnInitDialog()
 void CSetupDlg::OnOK() 
 {
 	// TODO: Add extra validation here
+/*
 	BOOL bCheck=TRUE;
 	int arryIDC[]={IDC_EDIT_THUMBNAILWIDTH,IDC_EDIT_AUDIOPREFIX,IDC_EDIT_FFMEPGPATH,IDC_EDIT_IMAGEPREFIX,IDC_EDIT_POSTERDIR,IDC_EDIT_THUMBNAILDIR,IDC_EDIT_VIDEOPREFIX};
 	ofstream _outFile;
@@ -248,5 +244,7 @@ void CSetupDlg::OnOK()
 
 		CDialog::OnOK();
 	}
+*/
 
+		CDialog::OnOK();
 }

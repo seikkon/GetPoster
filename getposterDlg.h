@@ -14,28 +14,26 @@
 #include <vector>
 using namespace std;
 
-extern struct ENV {
-	CString strFfmpegDir;
-	CString strThumbnailDir;
-	CString strPosterDir;
-	CString strVideoPrefix;
-	CString strAudioPrefix;
-	CString strImagePrefix;
-	CString strThumbnailWidth;
-} struEnvSetup;  
 
+struct ENV {
+	CString strCtrlID;
+	CString strValue;
+	CString strContent;
+};
 
 class CGetposterDlg : public CDialog
 {
 // Construction
 public:
+	void CreatInitFile(CString strFileName,vector<ENV>& vecInit);
+	BOOL DoInitENV(CString strFileName,vector<ENV>& vecENV);
 	BOOL CreateDir(CString strDirName,CString CurrentPath);
-	CString m_strCurrentDir;
 	void AddSubDir(HTREEITEM hParent);
 	CString GetFullPath(HTREEITEM hCurrent);
 	void GetDriveDir(HTREEITEM hParent);
 	void GetLogicalDrives(HTREEITEM hParent);
 	void GetMediaExtension(vector<CString>& vctExtensions, LPCTSTR lpVideoType);
+
 
 	CGetposterDlg(CWnd* pParent = NULL);	// standard constructor
 
@@ -57,8 +55,9 @@ public:
 protected:
 	CImageList m_ImageList;  //图像列表(相同大小图像集合)   
     HTREEITEM m_hRoot;       //句柄 CTreeCtrl的根结点"我的电脑"  
-
 	HICON m_hIcon;
+	vector<ENV> m_vecENV;
+	CString m_strCurrentDir;
 
 	// Generated message map functions
 	//{{AFX_MSG(CGetposterDlg)
