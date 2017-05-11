@@ -6,6 +6,7 @@
 #include "getposterDlg.h"
 #include "SetupDlg.h"
 #include <fstream> 
+#include <atlimage.h>
 using namespace std;
 
 
@@ -404,34 +405,51 @@ void CGetposterDlg::OnOK()
 	GetMediaExtension(vecImage,"picture");*/
 	
 
-	CString strPath = m_strCurrentPath;
-  	CreateDir(GetENVValue("POSTERDIR",m_vecENV),strPath);
-   	CreateDir(GetENVValue("THUMBNAILDIR",m_vecENV),strPath);
-  
-    strPath += "\\*.*";  
+	CString strCurrentPath,strPosterDir,strThumbnailDir,strVideoPrefix,strImagePrefix,strFfmpegPath;
+	int nWSize;
+	strCurrentPath=m_strCurrentPath;
+	
+  	CreateDir(strPosterDir=GetENVValue("POSTERDIR",m_vecENV),strCurrentPath);
+   	CreateDir(strThumbnailDir=GetENVValue("THUMBNAILDIR",m_vecENV),strCurrentPath);
+	strFfmpegPath=GetENVValue("FFMEPGPATH",m_vecENV);
+	strVideoPrefix=GetENVValue("VIDEOPREFIX",m_vecENV);
+	strImagePrefix=GetENVValue("IMAGEPREFIX",m_vecENV);
+	nWSize=_ttoi(GetENVValue("THUMBNAILWIDTH",m_vecENV));
+//    strPath += "\\*.*";  
 	CFileFind file;
-    BOOL bContinue = file.FindFile(strPath);  
+    BOOL bContinue = file.FindFile(strCurrentPath+"\\*.*");  
     while(bContinue)  
     {  
 		bContinue = file.FindNextFile(); 
 		if(!file.IsDirectory()&&!file.IsDots())
         {  
 			CString strFileName =file.GetFileName();
-			CString strFileExt =strFileName.Right(strFileName.GetLength()-strFileName.Find('\.')-1);
+			CString strFileExt =strFileName.Right(strFileName.GetLength()-strFileName.Find('.'));
+			strFileExt.MakeLower();
 			CString strFileType= GetMediaExtType(strFileExt);
-			if(strFileType=="video")
+			if(strFileType=="picture")
 			{
 				
 			}
-			else if(strFileType=="pictur")
+			else 
 			{
+				CString strSrcName,strWxH,strDestName;
+				strSrcName=strCurrentPath+'\\'+strFileName;
+				strDestName=strCurrentPath+'\\'+strPosterDir+'\\'+strFileName.Left(strFileName.Find('.')+1)+"jpg";
+				CString strArq(" -i %s -ss 00:00:01 -f image2 -vframes 1 %s",strSrcName,strDestName);
+				HINSTANCE hNewExe = ShellExecute(NULL,"open","c:\\tools\\ffmpeg.exe",strArq, NULL, SW_SHOW );
+				if((int)hNewExe<=32)
+				{
+					DWORD err=GetLastError();
+					AfxMessageBox("执行ffmpeg.exe错误",MB_OK);
+				}
 
 			}
 			
         }          
  
     }  
-//	CString strArq = "-i c:\\tmp\\testfile.mp4 -ss 00:00:01 -s 250x250 -f image2 -vframes 1 c:\\tmp\\test.jpg";
+//	CString strArq = "-i c:\\tmp\\testfile.mp4 -ss 00:00:01 -f image2 -s 352x240 -vframes 1 c:\\tmp\\test.jpg";
 //	HINSTANCE hNewExe = ShellExecute(NULL,"open","c:\\tmp\\ffmpeg.exe",strArq, NULL, NULL);
 
 	CDialog::OnOK();
@@ -440,17 +458,27 @@ void CGetposterDlg::OnOK()
 BOOL CGetposterDlg::CreateDir(CString strDirName, CString strCurrentPath)
 {
     CFileFind file; 
- 	BOOL bExsist=file.FindFile(strCurrentPath+strDirName,0);
-	if(bExsist!=FALSE)
+ 	BOOL bExsist=file.FindFile(strCurrentPath+'\\'+strDirName,0);
+
+	if(bExsist!=TRUE)
 	{
-		BOOL bFlag = CreateDirectory(strCurrentPath+'\\'+strDirName, NULL); 
-		if(bFlag==FALSE)
+		DWORD err=GetLastError();
+		if(err==2)
 		{
-			DWORD err = GetLastError();		
-//			AfxMessageBox("创建文件夹错误！"，MB_OK);
-			return FALSE;
+			BOOL bDone = CreateDirectory(strCurrentPath+'\\'+strDirName, NULL); 
+			if(bDone!=TRUE)
+			{
+				DWORD err = GetLastError();		
+				//			AfxMessageBox("创建文件夹错误！"，MB_OK);
+				return FALSE;
+			}
+		}
+		else
+		{
+			AfxMessageBox("创建文件夹时系统错误",MB_OK);
 		}
 	}
+	
  	return TRUE;
 }
 
@@ -623,4 +651,56 @@ CString CGetposterDlg::GetENVValue(CString strENVCtrlID,vector<ENV> &vecENV)
 		}
 	}
 	return "";
+}
+
+BOOL CGetposterDlg::CreateThumbnail(CString strOldFileName, CString strThumbnailPath, CString strPrefix, int nWSize)
+{
+    const WIDTH = 160;
+    const HEIGHT = 160;
+    CImage oldimg;
+    CImage newimg;
+    oldimg.Load(szOldFileName);
+    if(oldimg.IsNull())
+        return false;
+    int nWidth = 160;
+    int nHeight = 160;
+	
+    nWidth = oldimg.GetWidth();
+    nHeight = oldimg.GetHeight();
+	
+    if(nWidth > WIDTH || nHeight > HEIGHT)
+    {
+        double dRatio = nWidth * 1.0 / nHeight;
+        if(nWidth > nHeight)
+        {
+            nWidth = WIDTH;
+            nHeight = nWidth / dRatio;
+        }
+        else
+        {
+            nHeight = HEIGHT;
+            nWidth = nHeight * dRatio;
+        }
+    }
+	
+    if(!newimg.CreateEx(nWidth, nHeight, 24, BI_RGB))
+    {
+        oldimg.Destroy();
+        return false;
+    }
+	
+    int nPreMode = ::SetStretchBltMode(newimg.GetDC(),  HALFTONE);
+    newimg.ReleaseDC();
+    oldimg.Draw(newimg.GetDC(), 0, 0, nWidth, nHeight, 0, 0, oldimg.GetWidth(), oldimg.GetHeight());
+    newimg.ReleaseDC();
+    ::SetBrushOrgEx(newimg.GetDC(), 0, 0, NULL); 
+    newimg.ReleaseDC();
+    ::SetStretchBltMode(newimg.GetDC(), nPreMode);
+    newimg.ReleaseDC();
+	
+    newimg.Save(szNewFilName);
+    newimg.Destroy();
+    oldimg.Destroy();
+	
+    return true;
 }
