@@ -6,22 +6,7 @@
 --------------------Configuration: getposter - Win32 Debug--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating command line "rc.exe /l 0x804 /fo"Debug/getposter.res" /d "_DEBUG" /d "_AFXDLL" "C:\My Projects\GetPoster\getposter.rc"" 
-Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP1B1.tmp" with contents
-[
-/nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /FR"Debug/" /Fp"Debug/getposter.pch" /Yu"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
-"C:\My Projects\GetPoster\getposter.cpp"
-"C:\My Projects\GetPoster\getposterDlg.cpp"
-"C:\My Projects\GetPoster\SetupDlg.cpp"
-]
-Creating command line "cl.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP1B1.tmp" 
-Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP1B2.tmp" with contents
-[
-/nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /FR"Debug/" /Fp"Debug/getposter.pch" /Yc"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
-"C:\My Projects\GetPoster\StdAfx.cpp"
-]
-Creating command line "cl.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP1B2.tmp" 
-Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP1B3.tmp" with contents
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSPF5.tmp" with contents
 [
 /nologo /subsystem:windows /incremental:yes /pdb:"Debug/getposter.pdb" /debug /machine:I386 /out:"Debug/getposter.exe" /pdbtype:sept 
 ".\Debug\getposter.obj"
@@ -30,16 +15,8 @@ Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP1B3.tmp" with con
 ".\Debug\StdAfx.obj"
 ".\Debug\getposter.res"
 ]
-Creating command line "link.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP1B3.tmp"
+Creating command line "link.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSPF5.tmp"
 <h3>Output Window</h3>
-Compiling resources...
-Compiling...
-StdAfx.cpp
-Compiling...
-getposter.cpp
-getposterDlg.cpp
-SetupDlg.cpp
-Generating Code...
 Linking...
 Creating command line "bscmake.exe /nologo /o"Debug/getposter.bsc"  ".\Debug\StdAfx.sbr" ".\Debug\getposter.sbr" ".\Debug\getposterDlg.sbr" ".\Debug\SetupDlg.sbr""
 Creating browse info file...

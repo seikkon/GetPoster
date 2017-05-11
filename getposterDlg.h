@@ -25,6 +25,7 @@ class CGetposterDlg : public CDialog
 {
 // Construction
 public:
+	CString GetENVValue(CString ENVCtrlID,vector<ENV> &vecENV);
 	void CreatInitFile(CString strFileName,vector<ENV>& vecInit);
 	BOOL DoInitENV(CString strFileName,vector<ENV>& vecENV);
 	BOOL CreateDir(CString strDirName,CString CurrentPath);
@@ -32,7 +33,7 @@ public:
 	CString GetFullPath(HTREEITEM hCurrent);
 	void GetDriveDir(HTREEITEM hParent);
 	void GetLogicalDrives(HTREEITEM hParent);
-	void GetMediaExtension(vector<CString>& vctExtensions, LPCTSTR lpVideoType);
+	CString GetMediaExtType(CString strFileExt);
 
 
 	CGetposterDlg(CWnd* pParent = NULL);	// standard constructor
@@ -57,7 +58,7 @@ protected:
     HTREEITEM m_hRoot;       //句柄 CTreeCtrl的根结点"我的电脑"  
 	HICON m_hIcon;
 	vector<ENV> m_vecENV;
-	CString m_strCurrentDir;
+	CString m_strCurrentPath;
 
 	// Generated message map functions
 	//{{AFX_MSG(CGetposterDlg)

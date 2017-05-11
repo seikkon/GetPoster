@@ -133,6 +133,9 @@ BOOL CGetposterDlg::OnInitDialog()
 	
 	// TODO: Add extra initialization here
 
+	vector<ENV> vecInit;
+	DoInitENV("setup.def",m_vecENV);
+
 	m_ImageList.Create(32,32,ILC_COLOR32,10,30);     //创建图像序列CImageList对象 
 	HICON hIcon=AfxGetApp()->LoadIcon(IDI_ICON1);
 	m_ImageList.Add(hIcon);
@@ -143,9 +146,6 @@ BOOL CGetposterDlg::OnInitDialog()
     GetLogicalDrives(m_hRoot);                      //自定义函数 获取驱动  
     GetDriveDir(m_hRoot);                           //自定义函数 获取驱动子项  
     m_tree.Expand(m_hRoot,TVE_EXPAND);              //展开或折叠子项列表 TVE_EXPAND展开列表 
-
-	vector<ENV> vecInit;
-	DoInitENV("setup.def",vecInit);
 
 	HTREEITEM hParent=m_hRoot,hChild=NULL;
 	TCHAR strBuf[MAX_PATH];
@@ -280,9 +280,10 @@ void CGetposterDlg::GetDriveDir(HTREEITEM hParent)
     while(hChild)                                        
     {  
         CString strText = m_tree.GetItemText(hChild);  //检索列表中项目文字  
-        if(strText.Right(1) != "\\")                   //从右边1开始获取从右向左nCount个字符  
-            strText += _T("\\");  
-        strText += "*.*";  
+//        if(strText.Right(1) != "\\")                   //从右边1开始获取从右向左nCount个字符  
+//		strText += _T("\\");  
+//        strText += "*.*";  
+		strText += "\\*.*";  
         //将当前目录下文件枚举并InsertItem树状显示  
         CFileFind file;                                       //定义本地文件查找  
         BOOL bContinue = file.FindFile(strText);              //查找包含字符串的文件  
@@ -300,7 +301,7 @@ void CGetposterDlg::GetDriveDir(HTREEITEM hParent)
 CString CGetposterDlg::GetFullPath(HTREEITEM hCurrent)
 {
     CString strTemp;  
-    CString strReturn = "";  
+	CString strReturn = "";
     while(hCurrent != m_hRoot)  
     {  
         strTemp = m_tree.GetItemText(hCurrent);    //检索列表中项目文字  
@@ -309,15 +310,17 @@ CString CGetposterDlg::GetFullPath(HTREEITEM hCurrent)
         strReturn = strTemp  + strReturn;          
         hCurrent = m_tree.GetParentItem(hCurrent); //返回父项目句柄  
     }  
+	strReturn.TrimRight('\\');
     return strReturn;
 }
 
 void CGetposterDlg::AddSubDir(HTREEITEM hParent)
 {
     CString strPath = GetFullPath(hParent);     //获取全路径  
-    if(strPath.Right(1) != "\\")  
-        strPath += "\\";  
-    strPath += "*.*";  
+//    if(strPath.Right(1) != "\\")  
+//        strPath += "\\";  
+//    strPath += "*.*";  
+	strPath += "\\*.*";  
     CFileFind file;  
     BOOL bContinue = file.FindFile(strPath);    //查找包含字符串的文件  
     while(bContinue)  
@@ -355,7 +358,7 @@ void CGetposterDlg::OnSelchangedTree(NMHDR* pNMHDR, LRESULT* pResult)
     if(item.hItem == m_hRoot)  
         return;  
     CString str = GetFullPath(item.hItem);
-	m_strCurrentDir=str;
+	m_strCurrentPath=str;
 	if(str.Right(1)=='\\')
 		str.TrimRight('\\');
 	int nIndex=1;
@@ -368,15 +371,14 @@ void CGetposterDlg::OnSelchangedTree(NMHDR* pNMHDR, LRESULT* pResult)
 	SetDlgItemText(IDC_EDIT_PATH,str);
 
 	str = GetFullPath(item.hItem);
-    if(str.Right(1) != "\\")  
-		str += "\\";  
-    str += "*.*";  
+//    if(str.Right(1) != "\\")  
+//		str += "\\";  
+    str += "\\*.*";  
     CFileFind file;  
     BOOL bContinue = file.FindFile(str);  
     while(bContinue)  
     {  
         bContinue = file.FindNextFile();  
-        //if(!file.IsDirectory() && !file.IsDots())  
 		if(!file.IsDirectory()&&!file.IsDots())
         {  
             SHFILEINFO info;  
@@ -396,40 +398,41 @@ extern struct ENV struEnvSetup;
 void CGetposterDlg::OnOK() 
 {
 	// TODO: Add extra validation here
+/*
 	vector<CString> vecVideo,vecImage;//,vecAudio
 	GetMediaExtension(vecVideo,"video");
-	GetMediaExtension(vecImage,"picture");
+	GetMediaExtension(vecImage,"picture");*/
 	
 
-	CString str = m_strCurrentDir;
-    if(str.Right(1) != "\\")  
-		str += "\\";  
-
-// 	CreateDir(struEnvSetup.strPosterDir,str);
-// 	CreateDir(struEnvSetup.strThumbnailDir,str);
+	CString strPath = m_strCurrentPath;
+  	CreateDir(GetENVValue("POSTERDIR",m_vecENV),strPath);
+   	CreateDir(GetENVValue("THUMBNAILDIR",m_vecENV),strPath);
   
-
-    if(str.Right(1) != "\\")  
-		str += "\\";  
-    str += "*.*";  
+    strPath += "\\*.*";  
 	CFileFind file;
-    BOOL bContinue = file.FindFile(str);  
+    BOOL bContinue = file.FindFile(strPath);  
     while(bContinue)  
     {  
-        bContinue = file.FindNextFile();  
+		bContinue = file.FindNextFile(); 
 		if(!file.IsDirectory()&&!file.IsDots())
         {  
-            SHFILEINFO info;  
-            CString temp = str;  
-            int index = temp.Find("*.*");  
-            temp.Delete(index,3);  
-            SHGetFileInfo(temp + file.GetFileName(),0,&info,sizeof(&info),SHGFI_DISPLAYNAME | SHGFI_ICON);  
-            int i = m_ImageList.Add(info.hIcon);  
-            m_list.InsertItem(i,info.szDisplayName,i);  
-        }  
+			CString strFileName =file.GetFileName();
+			CString strFileExt =strFileName.Right(strFileName.GetLength()-strFileName.Find('\.')-1);
+			CString strFileType= GetMediaExtType(strFileExt);
+			if(strFileType=="video")
+			{
+				
+			}
+			else if(strFileType=="pictur")
+			{
+
+			}
+			
+        }          
+ 
     }  
-	CString strArq = "-i c:\\tmp\\testfile.mp4 -ss 00:00:01 -f image2 -vframes 1 c:\\tmp\\test.jpg";
-	HINSTANCE hNewExe = ShellExecute(NULL,"open","c:\\tmp\\ffmpeg.exe",strArq, NULL, NULL);
+//	CString strArq = "-i c:\\tmp\\testfile.mp4 -ss 00:00:01 -s 250x250 -f image2 -vframes 1 c:\\tmp\\test.jpg";
+//	HINSTANCE hNewExe = ShellExecute(NULL,"open","c:\\tmp\\ffmpeg.exe",strArq, NULL, NULL);
 
 	CDialog::OnOK();
 }
@@ -437,27 +440,27 @@ void CGetposterDlg::OnOK()
 BOOL CGetposterDlg::CreateDir(CString strDirName, CString strCurrentPath)
 {
     CFileFind file; 
-//	BOOL bExsist=file.FindFile(strCurrentPath+strDirName,0);
-//	if(bExsist!=FALSE)
-//	{
-		BOOL bFlag = CreateDirectory(strCurrentPath+strDirName, NULL); 
-		if(bFlag==TRUE)
+ 	BOOL bExsist=file.FindFile(strCurrentPath+strDirName,0);
+	if(bExsist!=FALSE)
+	{
+		BOOL bFlag = CreateDirectory(strCurrentPath+'\\'+strDirName, NULL); 
+		if(bFlag==FALSE)
 		{
 			DWORD err = GetLastError();		
 //			AfxMessageBox("创建文件夹错误！"，MB_OK);
 			return FALSE;
 		}
-//	}
+	}
  	return TRUE;
 }
 
 //void CGetposterDlg::GetMediaExtension(vector<wstring>& vctExtensions, LPCWSTR lpVideoType)  
-void CGetposterDlg::GetMediaExtension(vector<CString>& vctExtensions, LPCTSTR lpVideoType)
+CString CGetposterDlg::GetMediaExtType(CString strFileExt)
 {  
 	HKEY hKey = NULL;  
 	DWORD dwType  = REG_SZ;  
 	LONG retv = -1;  
-	const TCHAR *pVideoType = lpVideoType;//(NULL == lpVideoType) ? KIND_VIDEO : lpVideoType;  
+//	const TCHAR *pVideoType = lpVideoType;//(NULL == lpVideoType) ? KIND_VIDEO : lpVideoType;  
 	const TCHAR *pRegPath =   
 		_T("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\KindMap");  
 	
@@ -527,19 +530,26 @@ void CGetposterDlg::GetMediaExtension(vector<CString>& vctExtensions, LPCTSTR lp
 					
 					if (ERROR_SUCCESS == retv)  
 					{  
-						if (0 == _stricmp(szValueData, pVideoType))  
-						{  
-							vctExtensions.push_back(CString(szValueName));  
-						}  
-					}  
+// 						if (0 == _stricmp(szValueData, pVideoType))  
+// 						{  
+// 						   vctExtensions.push_back(CString(szValueName));  
+// 						} 
+						if(CString(szValueName)==strFileExt)
+						{
+							RegCloseKey(hKey);  
+							return CString(szValueData);
+						}
+					}
 				}  
 			}  
 		}  
 	}  
 	
+
 	if (NULL != hKey)  
 	{  
 		RegCloseKey(hKey);  
+		return CString("");
 	}  
 }  
 
@@ -557,8 +567,9 @@ BOOL CGetposterDlg::DoInitENV(CString strFileName,vector<ENV>& vecInit)
 	{	
 		_inFile.close();
 		CreatInitFile(strFileName,vecInit);
+		_inFile.open(strInitFile,ios::in);
 	}
-	
+
 	TCHAR strBuf[MAX_PATH];			
 	struct ENV struInitENV;
 	while(!_inFile.eof())
@@ -571,6 +582,7 @@ BOOL CGetposterDlg::DoInitENV(CString strFileName,vector<ENV>& vecInit)
 		strLine.TrimLeft('\'');strLine.TrimRight('\'');struInitENV.strContent=strLine;
 		vecInit.push_back(struInitENV);
 	}
+	_inFile.close();
 
 	return TRUE;
 }
@@ -598,4 +610,17 @@ void CGetposterDlg::CreatInitFile(CString strFileName,vector<ENV>& vecInit)
 		_outFile<<"\'VIDEOPREFIX\' \'video\' \'视频前置\'"<<endl<<flush;
 		_outFile.close();
 	}
+}
+
+CString CGetposterDlg::GetENVValue(CString strENVCtrlID,vector<ENV> &vecENV)
+{
+	vector<ENV>::iterator ite;
+	for (ite = vecENV.begin(); ite != vecENV.end();ite++)
+	{
+		if(ite->strCtrlID==strENVCtrlID)
+		{
+			return ite->strValue;
+		}
+	}
+	return "";
 }
