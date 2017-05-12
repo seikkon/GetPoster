@@ -4,5 +4,9 @@
 
 #include "stdafx.h"
 
+#if _MSC_VER < 1300   
+CImage::CInitGDIPlus CImage::s_initGDIPlus;   
+CImage::CDCCache CImage::s_cache;   
+#endif   
 
 

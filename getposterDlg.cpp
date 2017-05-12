@@ -429,19 +429,25 @@ void CGetposterDlg::OnOK()
 			CString strFileType= GetMediaExtType(strFileExt);
 			if(strFileType=="picture")
 			{
+				MakeThumbnail(file.GetFilePath(),strCurrentPath+'\\'+strThumbnailDir,strImagePrefix,nWSize);
 				
 			}
 			else 
 			{
-				CString strSrcName,strWxH,strDestName;
-				strSrcName=strCurrentPath+'\\'+strFileName;
-				strDestName=strCurrentPath+'\\'+strPosterDir+'\\'+strFileName.Left(strFileName.Find('.')+1)+"jpg";
-				CString strArq(" -i %s -ss 00:00:01 -f image2 -vframes 1 %s",strSrcName,strDestName);
+				CString strSrcPath,strDestPath;
+				strSrcPath=file.GetFilePath();//+'\\'+strFileName;
+				strDestPath=strCurrentPath+'\\'+strPosterDir+'\\'+strFileName.Left(strFileName.Find('.')+1)+"jpg";
+				CString strArq;
+				strArq.Format("-i %s -ss 00:00:01 -f image2 -vframes 1 %s",strSrcPath,strDestPath);
 				HINSTANCE hNewExe = ShellExecute(NULL,"open","c:\\tools\\ffmpeg.exe",strArq, NULL, SW_SHOW );
 				if((int)hNewExe<=32)
 				{
 					DWORD err=GetLastError();
 					AfxMessageBox("Ö´ÐÐffmpeg.exe´íÎó",MB_OK);
+				}
+				else
+				{
+					MakeThumbnail(strDestPath,strCurrentPath+'\\'+strThumbnailDir,strVideoPrefix,nWSize);
 				}
 
 			}
@@ -653,22 +659,22 @@ CString CGetposterDlg::GetENVValue(CString strENVCtrlID,vector<ENV> &vecENV)
 	return "";
 }
 
-BOOL CGetposterDlg::CreateThumbnail(CString strOldFileName, CString strThumbnailPath, CString strPrefix, int nWSize)
+BOOL CGetposterDlg::MakeThumbnail(CString strOriginImgPath, CString strThumbnailPath, CString strPrefix, int nSize)
 {
-    const WIDTH = 160;
-    const HEIGHT = 160;
-    CImage oldimg;
-    CImage newimg;
-    oldimg.Load(szOldFileName);
-    if(oldimg.IsNull())
+    const WIDTH = 200;
+    const HEIGHT = 200;
+    CImage cOriginImg;
+    CImage cThumbnail;
+    cOriginImg.Load(strOriginImgPath);
+    if(cOriginImg.IsNull())
         return false;
-    int nWidth = 160;
-    int nHeight = 160;
+    int nWidth = 200;
+    int nHeight = 200;
 	
-    nWidth = oldimg.GetWidth();
-    nHeight = oldimg.GetHeight();
+    nWidth = cOriginImg.GetWidth();
+    nHeight = cOriginImg.GetHeight();
 	
-    if(nWidth > WIDTH || nHeight > HEIGHT)
+    if(nWidth > WIDTH)
     {
         double dRatio = nWidth * 1.0 / nHeight;
         if(nWidth > nHeight)
@@ -683,24 +689,24 @@ BOOL CGetposterDlg::CreateThumbnail(CString strOldFileName, CString strThumbnail
         }
     }
 	
-    if(!newimg.CreateEx(nWidth, nHeight, 24, BI_RGB))
+    if(!cThumbnail.CreateEx(nWidth, nHeight, 24, BI_RGB))
     {
-        oldimg.Destroy();
+        cOriginImg.Destroy();
         return false;
     }
 	
-    int nPreMode = ::SetStretchBltMode(newimg.GetDC(),  HALFTONE);
-    newimg.ReleaseDC();
-    oldimg.Draw(newimg.GetDC(), 0, 0, nWidth, nHeight, 0, 0, oldimg.GetWidth(), oldimg.GetHeight());
-    newimg.ReleaseDC();
-    ::SetBrushOrgEx(newimg.GetDC(), 0, 0, NULL); 
-    newimg.ReleaseDC();
-    ::SetStretchBltMode(newimg.GetDC(), nPreMode);
-    newimg.ReleaseDC();
-	
-    newimg.Save(szNewFilName);
-    newimg.Destroy();
-    oldimg.Destroy();
+    int nPreMode = ::SetStretchBltMode(cThumbnail.GetDC(),HALFTONE);
+    cThumbnail.ReleaseDC();
+    cOriginImg.Draw(cThumbnail.GetDC(), 0, 0, nWidth, nHeight, 0, 0, cOriginImg.GetWidth(), cOriginImg.GetHeight());
+    cThumbnail.ReleaseDC();
+    ::SetBrushOrgEx(cThumbnail.GetDC(), 0, 0, NULL); 
+    cThumbnail.ReleaseDC();
+    ::SetStretchBltMode(cThumbnail.GetDC(), nPreMode);
+    cThumbnail.ReleaseDC();
+	//CString NewFilName=(strThumbnailPath+'\\'++strPrix+'-'+strOriginImgPath.Right(strOriginImgPath.GetLength()-strOriginImgPath.ReverseFind('\\')-1));	
+    cThumbnail.Save((strThumbnailPath+'\\'+strPrefix+'-'+strOriginImgPath.Right(strOriginImgPath.GetLength()-strOriginImgPath.ReverseFind('\\')-1)),Gdiplus::ImageFormatJPEG);
+    cThumbnail.Destroy();
+    cOriginImg.Destroy();
 	
     return true;
 }

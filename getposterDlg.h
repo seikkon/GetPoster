@@ -25,7 +25,7 @@ class CGetposterDlg : public CDialog
 {
 // Construction
 public:
-	BOOL CreateThumbnail(CString strOldFileName,CString strThumbnail,CString strPrefix,int nWSize);
+	BOOL MakeThumbnail(CString strOriginIamge,CString strThumbNailPath,CString  strPrex,int nSize);
 	CString GetENVValue(CString ENVCtrlID,vector<ENV> &vecENV);
 	void CreatInitFile(CString strFileName,vector<ENV>& vecInit);
 	BOOL DoInitENV(CString strFileName,vector<ENV>& vecENV);
