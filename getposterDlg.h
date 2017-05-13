@@ -15,7 +15,7 @@
 using namespace std;
 
 
-struct ENV {
+struct ENV{
 	CString strCtrlID;
 	CString strValue;
 	CString strContent;
@@ -25,6 +25,7 @@ class CGetposterDlg : public CDialog
 {
 // Construction
 public:
+	BOOL isFileExsist(CString strFilePath,CString strFileName);
 	BOOL MakeThumbnail(CString strOriginIamge,CString strThumbNailPath,CString  strPrex,int nSize);
 	CString GetENVValue(CString ENVCtrlID,vector<ENV> &vecENV);
 	void CreatInitFile(CString strFileName,vector<ENV>& vecInit);

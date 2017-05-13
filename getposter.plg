@@ -6,13 +6,22 @@
 --------------------Configuration: getposter - Win32 Debug--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP93.tmp" with contents
+Creating command line "rc.exe /l 0x804 /fo"Debug/getposter.res" /d "_DEBUG" /d "_AFXDLL" "C:\My Projects\GetPoster\getposter.rc"" 
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP157.tmp" with contents
 [
 /nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /FR"Debug/" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"C:\My Projects\GetPoster\getposter.cpp"
 "C:\My Projects\GetPoster\getposterDlg.cpp"
+"C:\My Projects\GetPoster\SetupDlg.cpp"
 ]
-Creating command line "cl.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP93.tmp" 
-Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP94.tmp" with contents
+Creating command line "cl.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP157.tmp" 
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP158.tmp" with contents
+[
+/nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /FR"Debug/" /Fp"Debug/getposter.pch" /Yc"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"C:\My Projects\GetPoster\StdAfx.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP158.tmp" 
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP159.tmp" with contents
 [
 /nologo /subsystem:windows /incremental:yes /pdb:"Debug/getposter.pdb" /debug /machine:I386 /out:"Debug/getposter.exe" /pdbtype:sept 
 ".\Debug\getposter.obj"
@@ -21,12 +30,23 @@ Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP94.tmp" with cont
 ".\Debug\StdAfx.obj"
 ".\Debug\getposter.res"
 ]
-Creating command line "link.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP94.tmp"
+Creating command line "link.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP159.tmp"
 <h3>Output Window</h3>
+Compiling resources...
 Compiling...
+StdAfx.cpp
+Compiling...
+getposter.cpp
 getposterDlg.cpp
-c:\my projects\getposter\getposterdlg.cpp(588) : warning C4715: 'CGetposterDlg::GetMediaExtType' : not all control paths return a value
-Linking...
+c:\my projects\getposter\setupdlg.h(11) : warning C4091: 'extern ' : ignored on left of 'struct ENV' when no variable is declared
+SetupDlg.cpp
+c:\my projects\getposter\setupdlg.h(11) : warning C4091: 'extern ' : ignored on left of 'struct ENV' when no variable is declared
+c:\program files\microsoft visual studio\vc98\include\vector(59) : error C2036: 'struct ENV *' : unknown size
+        c:\program files\microsoft visual studio\vc98\include\vector(58) : while compiling class-template member function '__thiscall std::vector<struct ENV,class std::allocator<struct ENV> >::~std::vector<struct ENV,class std::allocator<struct ENV> >(void)'
+c:\program files\microsoft visual studio\vc98\include\vector(59) : error C2036: 'struct ENV *' : unknown size
+        c:\program files\microsoft visual studio\vc98\include\vector(58) : while compiling class-template member function '__thiscall std::vector<struct ENV,class std::allocator<struct ENV> >::~std::vector<struct ENV,class std::allocator<struct ENV> >(void)'
+Generating Code...
+Error executing cl.exe.
 Creating command line "bscmake.exe /nologo /o"Debug/getposter.bsc"  ".\Debug\StdAfx.sbr" ".\Debug\getposter.sbr" ".\Debug\getposterDlg.sbr" ".\Debug\SetupDlg.sbr""
 Creating browse info file...
 <h3>Output Window</h3>
@@ -34,7 +54,7 @@ Creating browse info file...
 
 
 <h3>Results</h3>
-getposter.exe - 0 error(s), 1 warning(s)
+getposter.exe - 2 error(s), 2 warning(s)
 </pre>
 </body>
 </html>

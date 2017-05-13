@@ -11,6 +11,8 @@ using namespace std;
 
 
 #define INITEFILE "setup.def"
+#define PLAYMARK "playmark_50.png"
+#define FFMPEG "ffmpeg.exe"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -135,7 +137,7 @@ BOOL CGetposterDlg::OnInitDialog()
 	// TODO: Add extra initialization here
 
 	vector<ENV> vecInit;
-	DoInitENV("setup.def",m_vecENV);
+	DoInitENV(INITEFILE,m_vecENV);
 
 	m_ImageList.Create(32,32,ILC_COLOR32,10,30);     //创建图像序列CImageList对象 
 	HICON hIcon=AfxGetApp()->LoadIcon(IDI_ICON1);
@@ -429,27 +431,40 @@ void CGetposterDlg::OnOK()
 			CString strFileType= GetMediaExtType(strFileExt);
 			if(strFileType=="picture")
 			{
-				MakeThumbnail(file.GetFilePath(),strCurrentPath+'\\'+strThumbnailDir,strImagePrefix,nWSize);
-				
+				if(!isFileExsist(strCurrentPath+'\\'+strThumbnailDir,strImagePrefix+'-'+strFileName))
+					MakeThumbnail(file.GetFilePath(),strCurrentPath+'\\'+strThumbnailDir,strImagePrefix,nWSize);			
 			}
 			else 
 			{
-				CString strSrcPath,strDestPath;
+				CString strSrcPath,strPosterPath;
 				strSrcPath=file.GetFilePath();//+'\\'+strFileName;
-				strDestPath=strCurrentPath+'\\'+strPosterDir+'\\'+strFileName.Left(strFileName.Find('.')+1)+"jpg";
-				CString strArq;
-				strArq.Format("-i %s -ss 00:00:01 -f image2 -vframes 1 %s",strSrcPath,strDestPath);
-				HINSTANCE hNewExe = ShellExecute(NULL,"open","c:\\tools\\ffmpeg.exe",strArq, NULL, SW_SHOW );
-				if((int)hNewExe<=32)
+				strPosterPath=strCurrentPath+'\\'+strPosterDir+'\\'+strFileName.Left(strFileName.Find('.')+1)+"jpg";
+				if(!isFileExsist(strCurrentPath+'\\'+strPosterDir,strFileName.Left(strFileName.Find('.')+1)+"jpg"))
 				{
-					DWORD err=GetLastError();
-					AfxMessageBox("执行ffmpeg.exe错误",MB_OK);
-				}
-				else
-				{
-					MakeThumbnail(strDestPath,strCurrentPath+'\\'+strThumbnailDir,strVideoPrefix,nWSize);
-				}
+					if(isFileExsist(strFfmpegPath,FFMPEG))
+					{
+						CString strArq;
+						strArq.Format("-i %s -ss 00:00:01 -f image2 -vframes 1 %s",strSrcPath,strPosterPath);						
+						HINSTANCE hNewExe = ShellExecute(NULL,"open",strFfmpegPath+'\\'+"ffmpeg.exe",strArq, NULL, NULL);
+						DWORD err=GetLastError();
+						if((int)hNewExe<=32)
+						{
+							AfxMessageBox("执行ffmpeg.exe错误",MB_OK);
+						}
+						else
+						{
+							if(!isFileExsist(strCurrentPath+'\\'+strThumbnailDir,strVideoPrefix+'-'+strFileName))
+								MakeThumbnail(strPosterPath,strCurrentPath+'\\'+strThumbnailDir,strVideoPrefix,nWSize);
+						}
+					}
+					else
+					{
+						AfxMessageBox("找不到ffmpeg.exe! 请重新设定",MB_OK);
+						CSetupDlg dlgSetup;
+						dlgSetup.DoModal();
+					}
 
+				}
 			}
 			
         }          
@@ -468,23 +483,14 @@ BOOL CGetposterDlg::CreateDir(CString strDirName, CString strCurrentPath)
 
 	if(bExsist!=TRUE)
 	{
-		DWORD err=GetLastError();
-		if(err==2)
+		BOOL bDone = CreateDirectory(strCurrentPath+'\\'+strDirName, NULL); 
+		if(bDone!=TRUE)
 		{
-			BOOL bDone = CreateDirectory(strCurrentPath+'\\'+strDirName, NULL); 
-			if(bDone!=TRUE)
-			{
 				DWORD err = GetLastError();		
-				//			AfxMessageBox("创建文件夹错误！"，MB_OK);
+				AfxMessageBox("创建文件夹错误!",MB_OK);
 				return FALSE;
-			}
-		}
-		else
-		{
-			AfxMessageBox("创建文件夹时系统错误",MB_OK);
 		}
 	}
-	
  	return TRUE;
 }
 
@@ -585,6 +591,7 @@ CString CGetposterDlg::GetMediaExtType(CString strFileExt)
 		RegCloseKey(hKey);  
 		return CString("");
 	}  
+	return CString("");
 }  
 
 BOOL CGetposterDlg::DoInitENV(CString strFileName,vector<ENV>& vecInit)
@@ -592,16 +599,16 @@ BOOL CGetposterDlg::DoInitENV(CString strFileName,vector<ENV>& vecInit)
 //	pstruENV=new ENV;
 	TCHAR strPath[MAX_PATH];
 	GetModuleFileName(NULL,strPath,MAX_PATH);
-	CString strInitFile(strPath);
-	strInitFile=strInitFile.Left(strInitFile.ReverseFind('\\')+1)+strFileName; 
+	CString strInitPath(strPath);
+	strInitPath=strInitPath.Left(strInitPath.ReverseFind('\\')+1)+strFileName; 
 	
 	ifstream _inFile;
-	_inFile.open(strInitFile,ios::in);
+	_inFile.open(strInitPath,ios::in);
 	if(!_inFile.good())
 	{	
 		_inFile.close();
 		CreatInitFile(strFileName,vecInit);
-		_inFile.open(strInitFile,ios::in);
+		_inFile.open(strInitPath,ios::in);
 	}
 
 	TCHAR strBuf[MAX_PATH];			
@@ -698,15 +705,70 @@ BOOL CGetposterDlg::MakeThumbnail(CString strOriginImgPath, CString strThumbnail
     int nPreMode = ::SetStretchBltMode(cThumbnail.GetDC(),HALFTONE);
     cThumbnail.ReleaseDC();
     cOriginImg.Draw(cThumbnail.GetDC(), 0, 0, nWidth, nHeight, 0, 0, cOriginImg.GetWidth(), cOriginImg.GetHeight());
+
+
     cThumbnail.ReleaseDC();
     ::SetBrushOrgEx(cThumbnail.GetDC(), 0, 0, NULL); 
     cThumbnail.ReleaseDC();
     ::SetStretchBltMode(cThumbnail.GetDC(), nPreMode);
     cThumbnail.ReleaseDC();
+
+	if(strPrefix=="video")
+	{
+		TCHAR strPath[MAX_PATH];
+		GetModuleFileName(NULL,strPath,MAX_PATH);
+		CString strMarkPath(strPath);
+		strMarkPath=strMarkPath.Left(strMarkPath.ReverseFind('\\')+1)+PLAYMARK;
+		CImage cMarkImg;	
+		cMarkImg.Load(strMarkPath);
+		if (cMarkImg.IsNull())
+		{
+			AfxMessageBox(_T("PlayMark.png没加载成功")); 
+			return -1;
+		} 
+		if (cMarkImg.GetBPP() == 32) //确认该图像包含Alpha通道 
+		{
+			for (int i = 0; i < cMarkImg.GetWidth(); i++)
+			{ 
+				for (int j = 0; j < cMarkImg.GetHeight(); j++)
+				{
+					byte *pByte = (byte *)cMarkImg.GetPixelAddress(i, j);
+					pByte[0] = (pByte[0] * pByte[3]+127) / 255;
+					pByte[1] = (pByte[1] * pByte[3]+127) / 255;
+					pByte[2] = (pByte[2] * pByte[3]+127) / 255;
+				}
+			}
+		}
+		int nMarkX=0,nMarkY=0,nMarkSize=0;
+		if(nHeight<nWidth)
+		{
+			nMarkSize=nHeight*0.8;
+			nMarkX=(nWidth-nMarkSize)/2;
+			nMarkY=(nHeight-nMarkSize)/2;
+		}
+		else
+		{
+			nMarkSize=nWidth*0.8;
+			nMarkX=(nWidth-nMarkSize)/2;
+			nMarkY=(nHeight-nMarkSize)/2;
+		}
+		cMarkImg.Draw(cThumbnail.GetDC(), nMarkX, nMarkY, nMarkSize, nMarkSize, 0, 0, cMarkImg.GetWidth(), cMarkImg.GetHeight());
+		cThumbnail.ReleaseDC();
+		cMarkImg.Destroy();
+	}
+
+
 	//CString NewFilName=(strThumbnailPath+'\\'++strPrix+'-'+strOriginImgPath.Right(strOriginImgPath.GetLength()-strOriginImgPath.ReverseFind('\\')-1));	
     cThumbnail.Save((strThumbnailPath+'\\'+strPrefix+'-'+strOriginImgPath.Right(strOriginImgPath.GetLength()-strOriginImgPath.ReverseFind('\\')-1)),Gdiplus::ImageFormatJPEG);
+//	cMarkImg.Destroy();
     cThumbnail.Destroy();
     cOriginImg.Destroy();
-	
-    return true;
+    return TRUE;
+}
+
+BOOL CGetposterDlg::isFileExsist(CString strFilePath, CString strFileName)
+{
+	CFileFind file;
+	BOOL bRet=file.FindFile(strFilePath+'\\'+strFileName);  
+    return bRet;
 }
