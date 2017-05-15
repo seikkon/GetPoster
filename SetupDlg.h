@@ -14,6 +14,7 @@ class CSetupDlg : public CDialog
 {
 // Construction
 public:
+	void OnlyFfmpeg();
 	CSetupDlg(CWnd* pParent = NULL);   // standard constructor
 
 // Dialog Data

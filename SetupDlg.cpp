@@ -96,11 +96,11 @@ void CSetupDlg::OnButtonFindFile()
 		if(strFileName=="ffmpeg.exe")
 		{
 //			struEnvSetup.strFfmpegDir=strFilePath;
-			SetDlgItemText(IDC_EDIT_FFMEPGPATH,strFilePath);
+			SetDlgItemText(FFMEPGPATH,strFilePath);
 		}
 		else
 		{
-			AfxMessageBox(_T("并不是mmfpeg.exe！请重新选择"), MB_OK);
+			AfxMessageBox(_T("并不是ffmpeg.exe！请重新选择"), MB_OK);
 		}
 	}
 	UpdateData(FALSE);
@@ -121,8 +121,9 @@ BOOL CSetupDlg::OnInitDialog()
 		}
 		pChildWnd = pChildWnd->GetWindow(GW_HWNDNEXT);
 	}
-	return TRUE;  // return TRUE unless you set the focus to a control
-	              // EXCEPTION: OCX Property Pages should return FALSE
+	return TRUE;  
+	// return TRUE unless you set the focus to a control
+	// EXCEPTION: OCX Property Pages should return FALSE
 }
 
 void CSetupDlg::OnOK() 
@@ -204,4 +205,10 @@ void CSetupDlg::OnOK()
 */
 
 		CDialog::OnOK();
+}
+
+void CSetupDlg::OnlyFfmpeg()
+{
+	HWND* pEdit;
+	this->GetDlgItem(FFMEPGPATH,pEdit);
 }

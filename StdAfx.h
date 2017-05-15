@@ -14,7 +14,7 @@
 #define VC_EXTRALEAN		// Exclude rarely-used stuff from Windows headers
 #define __VC6_ATL_IMAGE_H__ 1  
 
-#define INITEFILE "setup.def"
+#define SETUPFILE "setup.def"
 #define PLAYMARK "playmark_50.png"
 #define FFMPEG "ffmpeg.exe"
 

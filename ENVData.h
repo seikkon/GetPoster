@@ -21,6 +21,7 @@ struct ENV{
 class CENVData  
 {
 public:
+	void UpdateENV();
 	BOOL SaveToData();
 	BOOL LoadFile(CString strFile, vector<ENV> &vecENV);
 //	BOOL SaveToData(CString strFile, vector<ENV> &vecENV);

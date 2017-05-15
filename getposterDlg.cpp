@@ -213,7 +213,8 @@ void CGetposterDlg::OnSysCommand(UINT nID, LPARAM lParam)
 	else if ((nID & 0xFFF0) == IDM_SETUPDLG)
 	{
 		CSetupDlg dlgSetup;
-		dlgSetup.DoModal();
+		if(dlgSetup.DoModal()==IDOK)
+			m_cENV.UpdateENV();
 	}
 	else
 	{
@@ -412,14 +413,16 @@ void CGetposterDlg::OnOK()
 	strImagePrefix=GetENVValue("IMAGEPREFIX",m_vecENV);
 	nWSize=_ttoi(GetENVValue("THUMBNAILWIDTH",m_vecENV));
 */
-	CreateDir(strPosterDir=m_cENV.GetENVVal(POSTERDIR),strCurrentPath);
-   	CreateDir(strThumbnailDir=m_cENV.GetENVVal(THUMBNAILDIR),strCurrentPath);
 	strFfmpegPath=m_cENV.GetENVVal(FFMEPGPATH);
 	strVideoPrefix=m_cENV.GetENVVal(VIDEOPREFIX);
 	strImagePrefix=m_cENV.GetENVVal(IMAGEPREFIX);
 	nWSize=_ttoi(m_cENV.GetENVVal(THUMBNAILWIDTH));
+	strPosterDir=m_cENV.GetENVVal(POSTERDIR);
+	strThumbnailDir=m_cENV.GetENVVal(THUMBNAILDIR);
 
-//    strPath += "\\*.*";  
+	CreateDir(strPosterDir,strCurrentPath);
+   	CreateDir(strThumbnailDir,strCurrentPath);
+
 	CFileFind file;
     BOOL bContinue = file.FindFile(strCurrentPath+"\\*.*");  
     while(bContinue)  
@@ -427,50 +430,56 @@ void CGetposterDlg::OnOK()
 		bContinue = file.FindNextFile(); 
 		if(!file.IsDirectory()&&!file.IsDots())
         {  
-			CString strFileName =file.GetFileName();
-			CString strFileExt =strFileName.Right(strFileName.GetLength()-strFileName.Find('.'));
+			CString strFileExt =file.GetFileName().Right(file.GetFileName().GetLength()-file.GetFileName().Find('.'));
 			strFileExt.MakeLower();
 			CString strFileType= GetMediaExtType(strFileExt);
 			if(strFileType=="picture")
 			{
-				if(!isFileExsist(strCurrentPath+'\\'+strThumbnailDir,strImagePrefix+'-'+strFileName))
+				if(!isFileExsist(strCurrentPath+'\\'+strThumbnailDir,strImagePrefix+'-'+file.GetFileName()))
 					MakeThumbnail(file.GetFilePath(),strCurrentPath+'\\'+strThumbnailDir,strImagePrefix,nWSize);			
 			}
 			else 
 			{
-				CString strSrcPath,strPosterPath;
-				strSrcPath=file.GetFilePath();//+'\\'+strFileName;
-				strPosterPath=strCurrentPath+'\\'+strPosterDir+'\\'+strFileName.Left(strFileName.Find('.')+1)+"jpg";
-				if(!isFileExsist(strCurrentPath+'\\'+strPosterDir,strFileName.Left(strFileName.Find('.')+1)+"jpg"))
+				if(isFileExsist(strFfmpegPath))
 				{
-					if(isFileExsist(strFfmpegPath,FFMPEG))
+					CString strPosterPath;//strSrcPath,strPosterPath;
+					strPosterPath=strCurrentPath+'\\'+strPosterDir+'\\'+file.GetFileName().Left(file.GetFileName().Find('.')+1)+"jpg";
+					if(!isFileExsist(strPosterPath))
 					{
+						
 						CString strArq;
-						strArq.Format("-i %s -ss 00:00:01 -f image2 -vframes 1 %s",strSrcPath,strPosterPath);						
-						HINSTANCE hNewExe = ShellExecute(NULL,"open",strFfmpegPath+'\\'+"ffmpeg.exe",strArq, NULL, NULL);
+						strArq.Format("-i %s -ss 00:00:01 -f image2 -vframes 1 %s",file.GetFilePath(),strPosterPath);						
+						HINSTANCE hNewExe = ShellExecute(NULL,"open",strFfmpegPath,strArq, NULL, NULL);
 						DWORD err=GetLastError();
 						if((int)hNewExe<=32)
 						{
 							AfxMessageBox("执行ffmpeg.exe错误",MB_OK);
-						}
-						else
-						{
-							if(!isFileExsist(strCurrentPath+'\\'+strThumbnailDir,strVideoPrefix+'-'+strFileName))
-								MakeThumbnail(strPosterPath,strCurrentPath+'\\'+strThumbnailDir,strVideoPrefix,nWSize);
+							bContinue=FALSE;
 						}
 					}
-					else
+					CString strVideoThumbnialName=strVideoPrefix+'-'+file.GetFileName().Left(file.GetFileName().Find('.')+1)+"jpg";
+					if(!isFileExsist(strCurrentPath+'\\'+strThumbnailDir,strVideoThumbnialName))
+						MakeThumbnail(strPosterPath,strCurrentPath+'\\'+strThumbnailDir,strVideoPrefix,nWSize);
+				}
+				else
+				{
+					AfxMessageBox("找不到ffmpeg.exe! 请重新设定",MB_OK);
+					CSetupDlg dlgSetup;
+					dlgSetup.OnlyFfmpeg();
+					if(dlgSetup.DoModal()==IDOK)
 					{
-						AfxMessageBox("找不到ffmpeg.exe! 请重新设定",MB_OK);
-						CSetupDlg dlgSetup;
-						dlgSetup.DoModal();
+						m_cENV.UpdateENV();
+						strFfmpegPath=m_cENV.GetENVVal(FFMEPGPATH);
+						strVideoPrefix=m_cENV.GetENVVal(VIDEOPREFIX);
+						strImagePrefix=m_cENV.GetENVVal(IMAGEPREFIX);
+						nWSize=_ttoi(m_cENV.GetENVVal(THUMBNAILWIDTH));
+						strPosterDir=m_cENV.GetENVVal(POSTERDIR);
+						strThumbnailDir=m_cENV.GetENVVal(THUMBNAILDIR);
 					}
 
 				}
 			}
-			
         }          
- 
     }  
 //	CString strArq = "-i c:\\tmp\\testfile.mp4 -ss 00:00:01 -f image2 -s 352x240 -vframes 1 c:\\tmp\\test.jpg";
 //	HINSTANCE hNewExe = ShellExecute(NULL,"open","c:\\tmp\\ffmpeg.exe",strArq, NULL, NULL);
@@ -777,6 +786,13 @@ BOOL CGetposterDlg::MakeThumbnail(CString strOriginImgPath, CString strThumbnail
 BOOL CGetposterDlg::isFileExsist(CString strFilePath, CString strFileName)
 {
 	CFileFind file;
-	BOOL bRet=file.FindFile(strFilePath+'\\'+strFileName);  
+	BOOL bRet=file.FindFile(strFilePath+'\\'+strFileName);
+	return bRet;
+}
+
+BOOL CGetposterDlg::isFileExsist(CString strFilePatName)
+{
+	CFileFind file;
+	BOOL bRet=file.FindFile(strFilePatName);  
     return bRet;
 }

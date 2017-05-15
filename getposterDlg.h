@@ -17,6 +17,7 @@ class CGetposterDlg : public CDialog
 {
 // Construction
 public:
+	BOOL isFileExsist(CString strFilePatName);
 	BOOL isFileExsist(CString strFilePath,CString strFileName);
 	BOOL MakeThumbnail(CString strOriginIamge,CString strThumbNailPath,CString  strPrex,int nSize);
 //	CString GetENVValue(CString ENVCtrlID,vector<ENV> &vecENV);

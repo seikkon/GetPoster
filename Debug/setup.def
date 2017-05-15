@@ -1,6 +1,6 @@
 '1024' '200' '缩图宽度'
 '1018' 'audio' '音档前置'
-'1011' 'C:\My Projects\ffmpeg.20160323.for.XP.x86.static\ffmpeg.exe' 'FFMEPG档'
+'1011' 'C:\ffmpeg.exe' 'FFMEPG档'
 '1019' 'image' '图档前置'
 '1013' 'Poster' '海报目录'
 '1012' 'Thumbnail' '缩图目录'

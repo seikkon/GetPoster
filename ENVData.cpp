@@ -21,7 +21,7 @@ static char THIS_FILE[]=__FILE__;
 
 CENVData::CENVData()
 {
-	DoInitENV(INITEFILE,m_vecENV);
+	DoInitENV(SETUPFILE,m_vecENV);
 }
 
 CENVData::~CENVData()
@@ -76,7 +76,7 @@ void CENVData::CreatInitFile(CString strInitPath)
 	{
 		_outFile<<'\''<<THUMBNAILWIDTH<<"\' \'200\' \'ËõÍ¼¿í¶È\'"<<endl;
 		_outFile<<'\''<<AUDIOPREFIX<<"\' \'audio\' \'ÒôµµÇ°ÖÃ\'"<<endl;
-		_outFile<<'\''<<FFMEPGPATH<<"\' \'C:\' \'FFMEPGµµ\'"<<endl;
+		_outFile<<'\''<<FFMEPGPATH<<"\' \'C:\\ffmpeg.exe' \'FFMEPGµµ\'"<<endl;
 		_outFile<<'\''<<IMAGEPREFIX<<"\' \'image\' \'Í¼µµÇ°ÖÃ\'"<<endl;
 		_outFile<<'\''<<POSTERDIR<<"\' \'Poster\' \'º£±¨Ä¿Â¼\'"<<endl;
 		_outFile<<'\''<<THUMBNAILDIR<<"\' \'Thumbnail\' \'ËõÍ¼Ä¿Â¼\'"<<endl;
@@ -141,7 +141,7 @@ BOOL CENVData::SaveToData()
 	TCHAR strPath[MAX_PATH];
 	GetModuleFileName(NULL,strPath,MAX_PATH);
 	CString strInitPath(strPath);
-	strInitPath=strInitPath.Left(strInitPath.ReverseFind('\\')+1)+INITEFILE; 
+	strInitPath=strInitPath.Left(strInitPath.ReverseFind('\\')+1)+SETUPFILE; 
 	ofstream _outFile(strInitPath,ios::out);
 
 	if(!_outFile.good()) 
@@ -152,7 +152,6 @@ BOOL CENVData::SaveToData()
 	else
 	{
 		vector<ENV>::iterator ite;
-		int nSize=m_vecENV.size();
 		for (ite = m_vecENV.begin(); ite != m_vecENV.end();ite++)
 		{
 			CString strLine;
@@ -162,4 +161,37 @@ BOOL CENVData::SaveToData()
 		_outFile.close();
 	}
 	return TRUE;
+}
+
+void CENVData::UpdateENV()
+{
+	TCHAR strPath[MAX_PATH];
+	GetModuleFileName(NULL,strPath,MAX_PATH);
+	CString strInitPath(strPath);
+	strInitPath=strInitPath.Left(strInitPath.ReverseFind('\\')+1)+SETUPFILE; 
+	ifstream _inFile(strInitPath,ios::in);
+	if(!_inFile.good())
+	{	
+		_inFile.close();
+		AfxMessageBox("Éè¶¨µµ¿ªÆôÊ§°Ü",MB_OK);
+	}
+	else
+	{
+		m_vecENV.clear();
+		int nSize=m_vecENV.size();
+		struct ENV struInitENV;
+		TCHAR strBuf[MAX_PATH];			
+		_inFile.getline(strBuf,MAX_PATH);
+		while(!_inFile.eof())
+		{
+			CString strLine(strBuf);
+			int nPos=0;
+			strLine.TrimLeft('\'');struInitENV.nCtrlID=_ttoi(strLine.Left(nPos=strLine.Find('\'',1)));strLine=strLine.Right(strLine.GetLength()-nPos-2);
+			strLine.TrimLeft('\'');struInitENV.strValue=strLine.Left(nPos=strLine.Find('\'',1));strLine=strLine.Right(strLine.GetLength()-nPos-2);
+			strLine.TrimLeft('\'');strLine.TrimRight('\'');struInitENV.strContent=strLine;
+			m_vecENV.push_back(struInitENV);
+			_inFile.getline(strBuf,MAX_PATH);
+		}
+		_inFile.close();
+	}
 }
