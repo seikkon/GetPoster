@@ -18,6 +18,14 @@
 #define PLAYMARK "playmark_50.png"
 #define FFMPEG "ffmpeg.exe"
 
+#define THUMBNAILWIDTH         1024
+#define VIDEOPREFIX            1017
+#define AUDIOPREFIX            1018
+#define IMAGEPREFIX            1019
+#define FFMEPGPATH             1011
+#define THUMBNAILDIR           1012
+#define POSTERDIR              1013
+
 #include <afxwin.h>         // MFC core and standard components
 #include <afxext.h>         // MFC extensions
 #include <afxdisp.h>        // MFC Automation classes

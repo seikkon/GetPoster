@@ -12,7 +12,8 @@
 using namespace std;
 
 struct ENV{
-	CString strCtrlID;
+	WORD nCtrlID;
+//	CString strCtrlID;
 	CString strValue;
 	CString strContent;
 };
@@ -20,12 +21,14 @@ struct ENV{
 class CENVData  
 {
 public:
+	BOOL SaveToData();
 	BOOL LoadFile(CString strFile, vector<ENV> &vecENV);
-	BOOL SaveData(CString strFile, vector<ENV> &vecENV);
-	void CreatInitFile(CString strFileName,vector<ENV>& vecInit);
+//	BOOL SaveToData(CString strFile, vector<ENV> &vecENV);
+
+	void CreatInitFile(CString strInitPath);
 	BOOL DoInitENV(CString strFileName,vector<ENV>& vecENV);
-	CString GetENVVal(CString ENVCtrlID);
-	BOOL SetENVVal(CString ENVCtrlID,CString strValue);
+	CString GetENVVal(WORD ENVCtrlID);
+	BOOL SetENVVal(WORD ENVCtrlID,CString strValue);
 	BOOL GetAllENV(vector<ENV> &vecENV);
 	BOOL SetAllENV(vector<ENV> &vecENV);
 

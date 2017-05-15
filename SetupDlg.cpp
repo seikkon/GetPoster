@@ -112,86 +112,15 @@ BOOL CSetupDlg::OnInitDialog()
 
 	// TODO: Add extra initialization here
 	//MAKEINTRESOURCE
-	WORD nID;
-	LPTSTR str;
 	CWnd* pChildWnd = this->GetWindow(GW_CHILD);
 	while(pChildWnd != NULL)
-	{        
-		nID=pChildWnd->GetDlgCtrlID(); //ID号与资源匹配
-		str=MAKEINTRESOURCE(nID);
+	{   
+		if(!m_cENV.GetENVVal(pChildWnd->GetDlgCtrlID()).IsEmpty())
+		{
+			pChildWnd->SetWindowText(m_cENV.GetENVVal(pChildWnd->GetDlgCtrlID())); //ID号与资源匹配
+		}
 		pChildWnd = pChildWnd->GetWindow(GW_HWNDNEXT);
 	}
-/*
-	TCHAR strPath[BUFSIZE];
-//	GetCurrentDirectory(BUFSIZE,strPath);
-	GetModuleFileName(NULL,strPath,BUFSIZE);
-	CString strInitFile(strPath);
-	strInitFile=strInitFile.Left(strInitFile.ReverseFind('\\'))+"\\setup.def"; 
-
-	ifstream _inFile;
-	ofstream _outFile;
-	_inFile.open(strInitFile,ios::in);
-	if(!_inFile.good())
-	{	
-		_inFile.close();
-		SetDlgItemText(IDC_EDIT_THUMBNAILWIDTH,struEnvSetup.strThumbnailWidth="200");
-		SetDlgItemText(IDC_EDIT_AUDIOPREFIX,struEnvSetup.strAudioPrefix="audio");
-		SetDlgItemText(IDC_EDIT_FFMEPGPATH,struEnvSetup.strFfmpegDir="");
-		SetDlgItemText(IDC_EDIT_IMAGEPREFIX,struEnvSetup.strImagePrefix="image");
-		SetDlgItemText(IDC_EDIT_POSTERDIR,struEnvSetup.strPosterDir="VideoPoster");
-		SetDlgItemText(IDC_EDIT_THUMBNAILDIR,struEnvSetup.strThumbnailDir="Thumbnail");
-		SetDlgItemText(IDC_EDIT_VIDEOPREFIX,struEnvSetup.strVideoPrefix="video");
-		_outFile.open(strInitFile,ios::out);
-		{
-			if(!_outFile.good()) 
-			{
-				AfxMessageBox("创建设定档失败",MB_OK);
-			}
-			else
-			{
-				_outFile<<"ThumbnailWidth="<<struEnvSetup.strThumbnailWidth.GetBuffer(struEnvSetup.strThumbnailWidth.GetLength())<<endl;
-				_outFile<<"AudioPrefix="<<struEnvSetup.strAudioPrefix.GetBuffer(struEnvSetup.strAudioPrefix.GetLength())<<endl;
-				_outFile<<"FfmpegDir="<<struEnvSetup.strFfmpegDir.GetBuffer(struEnvSetup.strFfmpegDir.GetLength())<<endl;
-				_outFile<<"ImagePrefix="<<struEnvSetup.strImagePrefix.GetBuffer(struEnvSetup.strImagePrefix.GetLength())<<endl;
-				_outFile<<"PosterDir="<<struEnvSetup.strPosterDir.GetBuffer(struEnvSetup.strPosterDir.GetLength())<<endl;
-				_outFile<<"ThumbnailDir="<<struEnvSetup.strThumbnailDir.GetBuffer(struEnvSetup.strThumbnailDir.GetLength())<<endl;
-				_outFile<<"VideoPrefix="<<struEnvSetup.strVideoPrefix.GetBuffer(struEnvSetup.strVideoPrefix.GetLength())<<endl<<flush;
-				_outFile.close();
-			}
-		}
-
-	}
-	else
-	{	
-		TCHAR strbuf[MAX_PATH];			
-		int nLine=0;
-		while(!_inFile.eof())
-		{
-
-			CString strInit[]={"ThumbnailWidth","AudioPrefix","FfmpegDir","ImagePrefix","PosterDir","ThumbnailDir","VideoPrefix"};
-
-			_inFile.getline(strbuf,MAX_PATH);
-			CString strLine(strbuf);
-			CString strInitItem=strLine.Left(strLine.Find('='));
-			CString strInitValue=strLine.Right(strLine.GetLength()-strLine.Find('=')-1);
-//			for(int nChoice=0;nChoice<=sizeof(strInit)||strInit[nChoice]!=strInitItem;nChoice++){}；
-
-			switch(nLine)
-			{
-				case 0: SetDlgItemText(IDC_EDIT_THUMBNAILWIDTH,struEnvSetup.strThumbnailWidth=strInitValue); break;
-				case 1: SetDlgItemText(IDC_EDIT_AUDIOPREFIX,struEnvSetup.strAudioPrefix=strInitValue); break;
-				case 2: SetDlgItemText(IDC_EDIT_FFMEPGPATH,struEnvSetup.strFfmpegDir=strInitValue); break;
-				case 3: SetDlgItemText(IDC_EDIT_IMAGEPREFIX,struEnvSetup.strImagePrefix=strInitValue); break;
-				case 4: SetDlgItemText(IDC_EDIT_POSTERDIR,struEnvSetup.strPosterDir=strInitValue); break;
-				case 5: SetDlgItemText(IDC_EDIT_THUMBNAILDIR,struEnvSetup.strThumbnailDir=strInitValue); break;
-				case 6: SetDlgItemText(IDC_EDIT_VIDEOPREFIX,struEnvSetup.strVideoPrefix=strInitValue); break;
-
-			}
-			nLine++;
-		}
-		
-	}
-*/
 	return TRUE;  // return TRUE unless you set the focus to a control
 	              // EXCEPTION: OCX Property Pages should return FALSE
 }
@@ -199,6 +128,25 @@ BOOL CSetupDlg::OnInitDialog()
 void CSetupDlg::OnOK() 
 {
 	// TODO: Add extra validation here
+
+	CWnd* pChildWnd = this->GetWindow(GW_CHILD);
+	while(pChildWnd != NULL)
+	{   
+		CString strText;
+		pChildWnd->GetWindowText(strText);
+		if(strText.IsEmpty())
+		{
+			AfxMessageBox("设定不能空白！请重新输入",MB_OK);
+			break;
+		}
+		else
+		{
+			m_cENV.SetENVVal(pChildWnd->GetDlgCtrlID(),strText);
+		}
+		pChildWnd = pChildWnd->GetWindow(GW_HWNDNEXT);
+	}
+	m_cENV.SaveToData();
+
 /*
 	BOOL bCheck=TRUE;
 	int arryIDC[]={IDC_EDIT_THUMBNAILWIDTH,IDC_EDIT_AUDIOPREFIX,IDC_EDIT_FFMEPGPATH,IDC_EDIT_IMAGEPREFIX,IDC_EDIT_POSTERDIR,IDC_EDIT_THUMBNAILDIR,IDC_EDIT_VIDEOPREFIX};

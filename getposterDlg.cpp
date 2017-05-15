@@ -412,12 +412,12 @@ void CGetposterDlg::OnOK()
 	strImagePrefix=GetENVValue("IMAGEPREFIX",m_vecENV);
 	nWSize=_ttoi(GetENVValue("THUMBNAILWIDTH",m_vecENV));
 */
-	CreateDir(strPosterDir=m_cENV.GetENVVal("POSTERDIR"),strCurrentPath);
-   	CreateDir(strThumbnailDir=m_cENV.GetENVVal("THUMBNAILDIR"),strCurrentPath);
-	strFfmpegPath=m_cENV.GetENVVal("FFMEPGPATH");
-	strVideoPrefix=m_cENV.GetENVVal("VIDEOPREFIX");
-	strImagePrefix=m_cENV.GetENVVal("IMAGEPREFIX");
-	nWSize=_ttoi(m_cENV.GetENVVal("THUMBNAILWIDTH"));
+	CreateDir(strPosterDir=m_cENV.GetENVVal(POSTERDIR),strCurrentPath);
+   	CreateDir(strThumbnailDir=m_cENV.GetENVVal(THUMBNAILDIR),strCurrentPath);
+	strFfmpegPath=m_cENV.GetENVVal(FFMEPGPATH);
+	strVideoPrefix=m_cENV.GetENVVal(VIDEOPREFIX);
+	strImagePrefix=m_cENV.GetENVVal(IMAGEPREFIX);
+	nWSize=_ttoi(m_cENV.GetENVVal(THUMBNAILWIDTH));
 
 //    strPath += "\\*.*";  
 	CFileFind file;

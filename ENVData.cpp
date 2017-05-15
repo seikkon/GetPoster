@@ -35,64 +35,62 @@ BOOL CENVData::DoInitENV(CString strFileName,vector<ENV>& vecInit)
 	GetModuleFileName(NULL,strPath,MAX_PATH);
 	CString strInitPath(strPath);
 	strInitPath=strInitPath.Left(strInitPath.ReverseFind('\\')+1)+strFileName; 
-	
-	ifstream _inFile;
-	_inFile.open(strInitPath,ios::in);
+	CFileFind file;
+	if(!file.FindFile(strInitPath))
+		CreatInitFile(strInitPath);
+
+	ifstream _inFile(strInitPath,ios::in);
 	if(!_inFile.good())
 	{	
 		_inFile.close();
-		CreatInitFile(strFileName,vecInit);
-		_inFile.open(strInitPath,ios::in);
+		AfxMessageBox("设定档开启失败",MB_OK);
+		return FALSE;
 	}
-	
-	TCHAR strBuf[MAX_PATH];			
 	struct ENV struInitENV;
+	TCHAR strBuf[MAX_PATH];			
+	_inFile.getline(strBuf,MAX_PATH);
 	while(!_inFile.eof())
 	{
-		_inFile.getline(strBuf,MAX_PATH);
 		CString strLine(strBuf);
 		int nPos=0;
-		strLine.TrimLeft('\'');struInitENV.strCtrlID=strLine.Left(nPos=strLine.Find('\'',1));strLine=strLine.Right(strLine.GetLength()-nPos-2);
+		strLine.TrimLeft('\'');struInitENV.nCtrlID=_ttoi(strLine.Left(nPos=strLine.Find('\'',1)));strLine=strLine.Right(strLine.GetLength()-nPos-2);
 		strLine.TrimLeft('\'');struInitENV.strValue=strLine.Left(nPos=strLine.Find('\'',1));strLine=strLine.Right(strLine.GetLength()-nPos-2);
 		strLine.TrimLeft('\'');strLine.TrimRight('\'');struInitENV.strContent=strLine;
 		vecInit.push_back(struInitENV);
+		_inFile.getline(strBuf,MAX_PATH);
 	}
 	_inFile.close();
-	
 	return TRUE;
 }
 
-void CENVData::CreatInitFile(CString strFileName,vector<ENV>& vecInit)
+void CENVData::CreatInitFile(CString strInitPath)
 {
-	TCHAR strPath[MAX_PATH];
-	GetModuleFileName(NULL,strPath,MAX_PATH);
-	CString strInitFile(strPath);
-	strInitFile=strInitFile.Left(strInitFile.ReverseFind('\\')+1)+strFileName; 
-	
-	ofstream _outFile;
+
+	ofstream _outFile(strInitPath,ios::out);
+//	_outFile(strInitPath,ios::out);
 	if(!_outFile.good()) 
 	{
 		AfxMessageBox("创建设定档失败",MB_OK);
 	}
 	else
 	{
-		_outFile<<"\'THUMBNAILWIDTH\' \'200\' \'缩图宽度\'"<<endl;
-		_outFile<<"\'AUDIOPREFIX\' \'audio\' \'音档前置\'"<<endl;
-		_outFile<<"\'FFMEPGPATH\' \'C:\' \'FFMEPG档\'"<<endl;
-		_outFile<<"\'IMAGEPREFIX\' \'image\' \'图档前置\'"<<endl;
-		_outFile<<"\'POSTERDIR\' \'Poster\' \'海报目录\'"<<endl;
-		_outFile<<"\'THUMBNAILDIR\' \'Thumbnail\' \'缩图目录\'"<<endl;
-		_outFile<<"\'VIDEOPREFIX\' \'video\' \'视频前置\'"<<endl<<flush;
+		_outFile<<'\''<<THUMBNAILWIDTH<<"\' \'200\' \'缩图宽度\'"<<endl;
+		_outFile<<'\''<<AUDIOPREFIX<<"\' \'audio\' \'音档前置\'"<<endl;
+		_outFile<<'\''<<FFMEPGPATH<<"\' \'C:\' \'FFMEPG档\'"<<endl;
+		_outFile<<'\''<<IMAGEPREFIX<<"\' \'image\' \'图档前置\'"<<endl;
+		_outFile<<'\''<<POSTERDIR<<"\' \'Poster\' \'海报目录\'"<<endl;
+		_outFile<<'\''<<THUMBNAILDIR<<"\' \'Thumbnail\' \'缩图目录\'"<<endl;
+		_outFile<<'\''<<VIDEOPREFIX<<"\' \'video\' \'视频前置\'"<<endl<<flush;
 		_outFile.close();
 	}
 }
 
-CString CENVData::GetENVVal(CString strENVCtrlID)
+CString CENVData::GetENVVal(WORD nENVCtrlID)
 {
 	vector<ENV>::iterator ite;
 	for (ite = m_vecENV.begin(); ite != m_vecENV.end();ite++)
 	{
-		if(ite->strCtrlID==strENVCtrlID)
+		if(ite->nCtrlID==nENVCtrlID)
 		{
 			return ite->strValue;
 		}
@@ -100,12 +98,12 @@ CString CENVData::GetENVVal(CString strENVCtrlID)
 	return "";
 }
 
-BOOL CENVData::SetENVVal(CString strENVCtrlID,CString strValue)
+BOOL CENVData::SetENVVal(WORD nENVCtrlID,CString strValue)
 {
 	vector<ENV>::iterator ite;
 	for (ite = m_vecENV.begin(); ite != m_vecENV.end();ite++)
 	{
-		if(ite->strCtrlID==strENVCtrlID)
+		if(ite->nCtrlID==nENVCtrlID)
 		{
 			ite->strValue=strValue;
 		}
@@ -130,8 +128,38 @@ BOOL CENVData::LoadFile(CString strFile, vector<ENV> &vecENV)
 
 	return TRUE;
 }
-
-BOOL CENVData::SaveData(CString strFile, vector<ENV> &vecENV)
+/*
+BOOL CENVData::SaveToFile(CString strFile, vector<ENV> &vecENV)
 {
+	return TRUE;
+}
+*/
+
+BOOL CENVData::SaveToData()
+{
+	//	pstruENV=new ENV;
+	TCHAR strPath[MAX_PATH];
+	GetModuleFileName(NULL,strPath,MAX_PATH);
+	CString strInitPath(strPath);
+	strInitPath=strInitPath.Left(strInitPath.ReverseFind('\\')+1)+INITEFILE; 
+	ofstream _outFile(strInitPath,ios::out);
+
+	if(!_outFile.good()) 
+	{
+		_outFile.close();
+		AfxMessageBox("创建设定档失败",MB_OK);
+	}
+	else
+	{
+		vector<ENV>::iterator ite;
+		int nSize=m_vecENV.size();
+		for (ite = m_vecENV.begin(); ite != m_vecENV.end();ite++)
+		{
+			CString strLine;
+			strLine.Format("\'%d\' \'%s\' \'%s\'",ite->nCtrlID,ite->strValue,ite->strContent);
+ 			_outFile<<strLine.GetBuffer(strLine.GetLength())<<endl;
+		}	
+		_outFile.close();
+	}
 	return TRUE;
 }
