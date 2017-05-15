@@ -9,11 +9,6 @@
 #include <atlimage.h>
 using namespace std;
 
-
-#define INITEFILE "setup.def"
-#define PLAYMARK "playmark_50.png"
-#define FFMPEG "ffmpeg.exe"
-
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
@@ -136,8 +131,8 @@ BOOL CGetposterDlg::OnInitDialog()
 	
 	// TODO: Add extra initialization here
 
-	vector<ENV> vecInit;
-	DoInitENV(INITEFILE,m_vecENV);
+//	vector<ENV> vecInit;
+//	DoInitENV(INITEFILE,m_vecENV);
 
 	m_ImageList.Create(32,32,ILC_COLOR32,10,30);     //创建图像序列CImageList对象 
 	HICON hIcon=AfxGetApp()->LoadIcon(IDI_ICON1);
@@ -155,8 +150,8 @@ BOOL CGetposterDlg::OnInitDialog()
 	GetCurrentDirectory(MAX_PATH,strBuf);	
 	CString strCurrentPath(strBuf);
 	CString strDir="Dir";
-	BOOL bExpandAll=FALSE;	
 	CString strText="Text";
+	BOOL bExpandAll=FALSE;	
 	while(!bExpandAll)
 	{
 		int nFind=strCurrentPath.Find('\\');
@@ -396,7 +391,6 @@ void CGetposterDlg::OnSelchangedTree(NMHDR* pNMHDR, LRESULT* pResult)
 	*pResult = 0;
 }
 
-extern struct ENV struEnvSetup;
 
 void CGetposterDlg::OnOK() 
 {
@@ -410,13 +404,21 @@ void CGetposterDlg::OnOK()
 	CString strCurrentPath,strPosterDir,strThumbnailDir,strVideoPrefix,strImagePrefix,strFfmpegPath;
 	int nWSize;
 	strCurrentPath=m_strCurrentPath;
-	
+/*
   	CreateDir(strPosterDir=GetENVValue("POSTERDIR",m_vecENV),strCurrentPath);
    	CreateDir(strThumbnailDir=GetENVValue("THUMBNAILDIR",m_vecENV),strCurrentPath);
 	strFfmpegPath=GetENVValue("FFMEPGPATH",m_vecENV);
 	strVideoPrefix=GetENVValue("VIDEOPREFIX",m_vecENV);
 	strImagePrefix=GetENVValue("IMAGEPREFIX",m_vecENV);
 	nWSize=_ttoi(GetENVValue("THUMBNAILWIDTH",m_vecENV));
+*/
+	CreateDir(strPosterDir=m_cENV.GetENVVal("POSTERDIR"),strCurrentPath);
+   	CreateDir(strThumbnailDir=m_cENV.GetENVVal("THUMBNAILDIR"),strCurrentPath);
+	strFfmpegPath=m_cENV.GetENVVal("FFMEPGPATH");
+	strVideoPrefix=m_cENV.GetENVVal("VIDEOPREFIX");
+	strImagePrefix=m_cENV.GetENVVal("IMAGEPREFIX");
+	nWSize=_ttoi(m_cENV.GetENVVal("THUMBNAILWIDTH"));
+
 //    strPath += "\\*.*";  
 	CFileFind file;
     BOOL bContinue = file.FindFile(strCurrentPath+"\\*.*");  
@@ -593,6 +595,7 @@ CString CGetposterDlg::GetMediaExtType(CString strFileExt)
 	}  
 	return CString("");
 }  
+/*
 
 BOOL CGetposterDlg::DoInitENV(CString strFileName,vector<ENV>& vecInit)
 {
@@ -628,6 +631,8 @@ BOOL CGetposterDlg::DoInitENV(CString strFileName,vector<ENV>& vecInit)
 	return TRUE;
 }
 
+*/
+/*
 void CGetposterDlg::CreatInitFile(CString strFileName,vector<ENV>& vecInit)
 {
 	TCHAR strPath[MAX_PATH];
@@ -652,6 +657,8 @@ void CGetposterDlg::CreatInitFile(CString strFileName,vector<ENV>& vecInit)
 		_outFile.close();
 	}
 }
+*/
+/*
 
 CString CGetposterDlg::GetENVValue(CString strENVCtrlID,vector<ENV> &vecENV)
 {
@@ -665,6 +672,7 @@ CString CGetposterDlg::GetENVValue(CString strENVCtrlID,vector<ENV> &vecENV)
 	}
 	return "";
 }
+*/
 
 BOOL CGetposterDlg::MakeThumbnail(CString strOriginImgPath, CString strThumbnailPath, CString strPrefix, int nSize)
 {

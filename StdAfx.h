@@ -14,6 +14,10 @@
 #define VC_EXTRALEAN		// Exclude rarely-used stuff from Windows headers
 #define __VC6_ATL_IMAGE_H__ 1  
 
+#define INITEFILE "setup.def"
+#define PLAYMARK "playmark_50.png"
+#define FFMPEG "ffmpeg.exe"
+
 #include <afxwin.h>         // MFC core and standard components
 #include <afxext.h>         // MFC extensions
 #include <afxdisp.h>        // MFC Automation classes
@@ -21,6 +25,7 @@
 #ifndef _AFX_NO_AFXCMN_SUPPORT
 #include <afxcmn.h>			// MFC support for Windows Common Controls
 #endif // _AFX_NO_AFXCMN_SUPPORT
+
 #include <atlimage.h>
 
 //{{AFX_INSERT_LOCATION}}

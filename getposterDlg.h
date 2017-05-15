@@ -8,18 +8,10 @@
 #if _MSC_VER > 1000
 #pragma once
 #endif // _MSC_VER > 1000
-
+#include "ENVData.h"
 /////////////////////////////////////////////////////////////////////////////
 // CGetposterDlg dialog
-#include <vector>
-using namespace std;
 
-
-struct ENV{
-	CString strCtrlID;
-	CString strValue;
-	CString strContent;
-};
 
 class CGetposterDlg : public CDialog
 {
@@ -27,16 +19,15 @@ class CGetposterDlg : public CDialog
 public:
 	BOOL isFileExsist(CString strFilePath,CString strFileName);
 	BOOL MakeThumbnail(CString strOriginIamge,CString strThumbNailPath,CString  strPrex,int nSize);
-	CString GetENVValue(CString ENVCtrlID,vector<ENV> &vecENV);
-	void CreatInitFile(CString strFileName,vector<ENV>& vecInit);
-	BOOL DoInitENV(CString strFileName,vector<ENV>& vecENV);
+//	CString GetENVValue(CString ENVCtrlID,vector<ENV> &vecENV);
+//	void CreatInitFile(CString strFileName,vector<ENV>& vecInit);
+//	BOOL DoInitENV(CString strFileName,vector<ENV>& vecENV);
 	BOOL CreateDir(CString strDirName,CString CurrentPath);
 	void AddSubDir(HTREEITEM hParent);
 	CString GetFullPath(HTREEITEM hCurrent);
 	void GetDriveDir(HTREEITEM hParent);
 	void GetLogicalDrives(HTREEITEM hParent);
 	CString GetMediaExtType(CString strFileExt);
-
 
 	CGetposterDlg(CWnd* pParent = NULL);	// standard constructor
 
@@ -59,7 +50,7 @@ protected:
 	CImageList m_ImageList;  //图像列表(相同大小图像集合)   
     HTREEITEM m_hRoot;       //句柄 CTreeCtrl的根结点"我的电脑"  
 	HICON m_hIcon;
-	vector<ENV> m_vecENV;
+	CENVData m_cENV;
 	CString m_strCurrentPath;
 
 	// Generated message map functions

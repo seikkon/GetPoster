@@ -6,9 +6,7 @@
 #endif // _MSC_VER > 1000
 // SetupDlg.h : header file
 //
-#include <vector>
-using namespace std;
-extern struct ENV;
+#include "ENVData.h"
 /////////////////////////////////////////////////////////////////////////////
 // CSetupDlg dialog
 
@@ -37,7 +35,7 @@ public:
 // Implementation
 protected:
 private:
-		vector<ENV> m_vecENV;
+	CENVData m_cENV;
 
 	// Generated message map functions
 	//{{AFX_MSG(CSetupDlg)

@@ -111,7 +111,16 @@ BOOL CSetupDlg::OnInitDialog()
 	CDialog::OnInitDialog();
 
 	// TODO: Add extra initialization here
-
+	//MAKEINTRESOURCE
+	WORD nID;
+	LPTSTR str;
+	CWnd* pChildWnd = this->GetWindow(GW_CHILD);
+	while(pChildWnd != NULL)
+	{        
+		nID=pChildWnd->GetDlgCtrlID(); //IDºÅÓë×ÊÔ´Æ¥Åä
+		str=MAKEINTRESOURCE(nID);
+		pChildWnd = pChildWnd->GetWindow(GW_HWNDNEXT);
+	}
 /*
 	TCHAR strPath[BUFSIZE];
 //	GetCurrentDirectory(BUFSIZE,strPath);
