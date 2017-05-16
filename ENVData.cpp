@@ -135,7 +135,7 @@ BOOL CENVData::SaveToFile(CString strFile, vector<ENV> &vecENV)
 }
 */
 
-BOOL CENVData::SaveToData()
+BOOL CENVData::SaveToFile()
 {
 	//	pstruENV=new ENV;
 	TCHAR strPath[MAX_PATH];

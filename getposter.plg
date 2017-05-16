@@ -6,7 +6,7 @@
 --------------------Configuration: getposter - Win32 Debug--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSPC7.tmp" with contents
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSPED.tmp" with contents
 [
 /nologo /subsystem:windows /incremental:yes /pdb:"Debug/getposter.pdb" /debug /machine:I386 /out:"Debug/getposter.exe" /pdbtype:sept 
 ".\Debug\ENVData.obj"
@@ -16,7 +16,7 @@ Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSPC7.tmp" with cont
 ".\Debug\StdAfx.obj"
 ".\Debug\getposter.res"
 ]
-Creating command line "link.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSPC7.tmp"
+Creating command line "link.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSPED.tmp"
 <h3>Output Window</h3>
 Linking...
 Creating command line "bscmake.exe /nologo /o"Debug/getposter.bsc"  ".\Debug\StdAfx.sbr" ".\Debug\ENVData.sbr" ".\Debug\getposter.sbr" ".\Debug\getposterDlg.sbr" ".\Debug\SetupDlg.sbr""

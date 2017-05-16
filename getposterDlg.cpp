@@ -464,7 +464,35 @@ void CGetposterDlg::OnOK()
 				else
 				{
 					AfxMessageBox("找不到ffmpeg.exe! 请重新设定",MB_OK);
+
+ 
+					CSetupDlg *dlgSetup;
+					dlgSetup=new CSetupDlg;
+					dlgSetup->Create(IDD_SETUP_DIALOG,this);//->CreateDlg("Setup Dialog",this->GetWindow(GW_OWNER));
+					dlgSetup->OnlyFfmpeg();
+					dlgSetup->DoModal();
+/*
+					this->EnableWindow(FALSE);
+					dlgSetup->ShowWindow(SW_SHOW);
+					dlgSetup->SetActiveWindow();
+					dlgSetup->SetFocus();
+*/
+
+/*
 					CSetupDlg dlgSetup;
+//					CWnd* pWnd=dlgSetup.GetDlgItem();
+					dlgSetup.DoModal();
+					dlgSetup.GetSafeHwnd
+*/
+
+//					CWnd* pOkButton=dlgSetup->GetDlgItem(IDOK);
+//					pOkButton->SetFocus();
+//					if(dlgSetup->DoModal()==IDOK)
+//					{
+//						AfxMessageBox("show",MB_OK);
+//					}
+/*
+
 					dlgSetup.OnlyFfmpeg();
 					if(dlgSetup.DoModal()==IDOK)
 					{
@@ -476,6 +504,7 @@ void CGetposterDlg::OnOK()
 						strPosterDir=m_cENV.GetENVVal(POSTERDIR);
 						strThumbnailDir=m_cENV.GetENVVal(THUMBNAILDIR);
 					}
+*/
 
 				}
 			}
@@ -484,7 +513,7 @@ void CGetposterDlg::OnOK()
 //	CString strArq = "-i c:\\tmp\\testfile.mp4 -ss 00:00:01 -f image2 -s 352x240 -vframes 1 c:\\tmp\\test.jpg";
 //	HINSTANCE hNewExe = ShellExecute(NULL,"open","c:\\tmp\\ffmpeg.exe",strArq, NULL, NULL);
 
-	CDialog::OnOK();
+//	CDialog::OnOK();
 }
 
 BOOL CGetposterDlg::CreateDir(CString strDirName, CString strCurrentPath)

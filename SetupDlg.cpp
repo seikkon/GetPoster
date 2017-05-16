@@ -146,69 +146,23 @@ void CSetupDlg::OnOK()
 		}
 		pChildWnd = pChildWnd->GetWindow(GW_HWNDNEXT);
 	}
-	m_cENV.SaveToData();
+	m_cENV.SaveToFile();
 
-/*
-	BOOL bCheck=TRUE;
-	int arryIDC[]={IDC_EDIT_THUMBNAILWIDTH,IDC_EDIT_AUDIOPREFIX,IDC_EDIT_FFMEPGPATH,IDC_EDIT_IMAGEPREFIX,IDC_EDIT_POSTERDIR,IDC_EDIT_THUMBNAILDIR,IDC_EDIT_VIDEOPREFIX};
-	ofstream _outFile;
-	for(int i=0;i<(sizeof(arryIDC)/sizeof(i));i++)
-	{
-		CString strText;
-		GetDlgItemText(arryIDC[i],strText);
-		if(strText=="") 
-		{
-			bCheck=FALSE;
-			break;
-		}
-	}
-	if(!bCheck)
-	{
-		AfxMessageBox("设定不能空白！请重新输入",MB_OK);
-	}
-	else
-	{
-		TCHAR strPath[BUFSIZE];
-//		GetCurrentDirectory(BUFSIZE,strPath);
-		GetModuleFileName(NULL,strPath,BUFSIZE);
-		CString strInitFile(strPath);
-		strInitFile=strInitFile.Left(strInitFile.ReverseFind('\\'))+"\\setup.def"; 
-
-		_outFile.open(strInitFile,ios::out|ios::trunc);
-		if(!_outFile.good()) 
-		{
-			AfxMessageBox("设定档失败",MB_OK);
-		}
-		else
-		{
-			ENV *pStruEnv=&struEnvSetup;
-			CString strText;
-			GetDlgItemText(arryIDC[0],strText);struEnvSetup.strThumbnailWidth=strText;
-			_outFile<<"ThumbnailWidth="<<struEnvSetup.strThumbnailWidth.GetBuffer(struEnvSetup.strThumbnailWidth.GetLength())<<endl;
-			GetDlgItemText(arryIDC[1],strText);struEnvSetup.strAudioPrefix=strText;
-			_outFile<<"AudioPrefix="<<struEnvSetup.strAudioPrefix.GetBuffer(struEnvSetup.strAudioPrefix.GetLength())<<endl;
-			GetDlgItemText(arryIDC[2],strText);struEnvSetup.strFfmpegDir=strText;
-			_outFile<<"FfmpegDir="<<struEnvSetup.strFfmpegDir.GetBuffer(struEnvSetup.strFfmpegDir.GetLength())<<endl;
-			GetDlgItemText(arryIDC[3],strText);struEnvSetup.strImagePrefix=strText;
-			_outFile<<"ImagePrefix="<<struEnvSetup.strImagePrefix.GetBuffer(struEnvSetup.strImagePrefix.GetLength())<<endl;
-			GetDlgItemText(arryIDC[4],strText);struEnvSetup.strPosterDir=strText;
-			_outFile<<"PosterDir="<<struEnvSetup.strPosterDir.GetBuffer(struEnvSetup.strPosterDir.GetLength())<<endl;
-			GetDlgItemText(arryIDC[5],strText);struEnvSetup.strThumbnailDir=strText;
-			_outFile<<"ThumbnailDir="<<struEnvSetup.strThumbnailDir.GetBuffer(struEnvSetup.strThumbnailDir.GetLength())<<endl;
-			GetDlgItemText(arryIDC[6],strText);struEnvSetup.strVideoPrefix=strText;
-			_outFile<<"VideoPrefix="<<struEnvSetup.strVideoPrefix.GetBuffer(struEnvSetup.strVideoPrefix.GetLength())<<endl<<flush;
-			_outFile.close();
-		}
-
-		CDialog::OnOK();
-	}
-*/
-
-		CDialog::OnOK();
+	CDialog::OnOK();
 }
 
 void CSetupDlg::OnlyFfmpeg()
 {
-	HWND* pEdit;
-	this->GetDlgItem(FFMEPGPATH,pEdit);
+	CWnd* pChildWnd = this->GetWindow(GW_CHILD);
+	while(pChildWnd != NULL)
+	{   
+		CHAR szClassName[MAX_PATH];
+		WORD nID = pChildWnd->GetDlgCtrlID();
+		GetClassName(pChildWnd->GetSafeHwnd(),szClassName,MAX_PATH);
+		if(!strcmp(szClassName,"Edit"))
+		{
+			((CEdit* )pChildWnd)->SetReadOnly(TRUE);
+		}
+		pChildWnd = pChildWnd->GetWindow(GW_HWNDNEXT);
+	}
 }
