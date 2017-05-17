@@ -53,7 +53,6 @@ protected:
 	HICON m_hIcon;
 	CENVData m_cENV;
 	CString m_strCurrentPath;
-
 	// Generated message map functions
 	//{{AFX_MSG(CGetposterDlg)
 	virtual BOOL OnInitDialog();

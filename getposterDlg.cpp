@@ -85,6 +85,7 @@ void CGetposterDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(CGetposterDlg, CDialog)
 	//{{AFX_MSG_MAP(CGetposterDlg)
+
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
@@ -130,9 +131,6 @@ BOOL CGetposterDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 	
 	// TODO: Add extra initialization here
-
-//	vector<ENV> vecInit;
-//	DoInitENV(INITEFILE,m_vecENV);
 
 	m_ImageList.Create(32,32,ILC_COLOR32,10,30);     //创建图像序列CImageList对象 
 	HICON hIcon=AfxGetApp()->LoadIcon(IDI_ICON1);
@@ -396,29 +394,44 @@ void CGetposterDlg::OnSelchangedTree(NMHDR* pNMHDR, LRESULT* pResult)
 void CGetposterDlg::OnOK() 
 {
 	// TODO: Add extra validation here
-/*
-	vector<CString> vecVideo,vecImage;//,vecAudio
-	GetMediaExtension(vecVideo,"video");
-	GetMediaExtension(vecImage,"picture");*/
-	
 
+	
 	CString strCurrentPath,strPosterDir,strThumbnailDir,strVideoPrefix,strImagePrefix,strFfmpegPath;
-	int nWSize;
+	int nWSize;	
+
 	strCurrentPath=m_strCurrentPath;
-/*
-  	CreateDir(strPosterDir=GetENVValue("POSTERDIR",m_vecENV),strCurrentPath);
-   	CreateDir(strThumbnailDir=GetENVValue("THUMBNAILDIR",m_vecENV),strCurrentPath);
-	strFfmpegPath=GetENVValue("FFMEPGPATH",m_vecENV);
-	strVideoPrefix=GetENVValue("VIDEOPREFIX",m_vecENV);
-	strImagePrefix=GetENVValue("IMAGEPREFIX",m_vecENV);
-	nWSize=_ttoi(GetENVValue("THUMBNAILWIDTH",m_vecENV));
-*/
 	strFfmpegPath=m_cENV.GetENVVal(FFMEPGPATH);
 	strVideoPrefix=m_cENV.GetENVVal(VIDEOPREFIX);
 	strImagePrefix=m_cENV.GetENVVal(IMAGEPREFIX);
 	nWSize=_ttoi(m_cENV.GetENVVal(THUMBNAILWIDTH));
 	strPosterDir=m_cENV.GetENVVal(POSTERDIR);
 	strThumbnailDir=m_cENV.GetENVVal(THUMBNAILDIR);
+
+	while(!isFileExsist(strFfmpegPath))
+	{
+		AfxMessageBox("找不到ffmpeg.exe! 请重新设定",MB_OK);
+		CFileDialog Dlg(TRUE,NULL,"*.*");
+		
+		
+		if(Dlg.DoModal()==IDOK)
+		{		//当你找到文件并确定打开时   
+			strFfmpegPath = Dlg.GetPathName();
+		}
+	}
+	m_cENV.SetENVVal(FFMEPGPATH,strFfmpegPath);
+/*		
+		CSetupDlg *dlgSetup;
+		dlgSetup=new CSetupDlg;
+		dlgSetup->Create(IDD_SETUP_DIALOG,this);//->CreateDlg("Setup Dialog",this->GetWindow(GW_OWNER));
+		
+		this->EnableWindow(FALSE);
+		dlgSetup->ShowWindow(SW_SHOW);
+		dlgSetup->SetActiveWindow();
+		dlgSetup->SetFocus();
+		dlgSetup->OnlyFfmpeg();	
+		delete dlgSetup;
+*/
+
 
 	CreateDir(strPosterDir,strCurrentPath);
    	CreateDir(strThumbnailDir,strCurrentPath);
@@ -440,80 +453,33 @@ void CGetposterDlg::OnOK()
 			}
 			else 
 			{
-				if(isFileExsist(strFfmpegPath))
+				CString strPosterPath;//strSrcPath,strPosterPath;
+				strPosterPath=strCurrentPath+'\\'+strPosterDir+'\\'+file.GetFileName().Left(file.GetFileName().Find('.')+1)+"jpg";
+				if(!isFileExsist(strPosterPath))
 				{
-					CString strPosterPath;//strSrcPath,strPosterPath;
-					strPosterPath=strCurrentPath+'\\'+strPosterDir+'\\'+file.GetFileName().Left(file.GetFileName().Find('.')+1)+"jpg";
-					if(!isFileExsist(strPosterPath))
+					
+					CString strArq;
+					strArq.Format("-i %s -ss 00:00:01 -f image2 -vframes 1 %s",file.GetFilePath(),strPosterPath);						
+					HINSTANCE hNewExe = ShellExecute(NULL,"open",strFfmpegPath,strArq, NULL, NULL);
+					DWORD err=GetLastError();
+					if((int)hNewExe<=32)
 					{
-						
-						CString strArq;
-						strArq.Format("-i %s -ss 00:00:01 -f image2 -vframes 1 %s",file.GetFilePath(),strPosterPath);						
-						HINSTANCE hNewExe = ShellExecute(NULL,"open",strFfmpegPath,strArq, NULL, NULL);
-						DWORD err=GetLastError();
-						if((int)hNewExe<=32)
-						{
-							AfxMessageBox("执行ffmpeg.exe错误",MB_OK);
-							bContinue=FALSE;
-						}
+						AfxMessageBox("执行ffmpeg.exe错误",MB_OK);
+						bContinue=FALSE;
 					}
-					CString strVideoThumbnialName=strVideoPrefix+'-'+file.GetFileName().Left(file.GetFileName().Find('.')+1)+"jpg";
-					if(!isFileExsist(strCurrentPath+'\\'+strThumbnailDir,strVideoThumbnialName))
-						MakeThumbnail(strPosterPath,strCurrentPath+'\\'+strThumbnailDir,strVideoPrefix,nWSize);
 				}
-				else
-				{
-					AfxMessageBox("找不到ffmpeg.exe! 请重新设定",MB_OK);
-
- 
-					CSetupDlg *dlgSetup;
-					dlgSetup=new CSetupDlg;
-					dlgSetup->Create(IDD_SETUP_DIALOG,this);//->CreateDlg("Setup Dialog",this->GetWindow(GW_OWNER));
-					dlgSetup->OnlyFfmpeg();
-					dlgSetup->DoModal();
-/*
-					this->EnableWindow(FALSE);
-					dlgSetup->ShowWindow(SW_SHOW);
-					dlgSetup->SetActiveWindow();
-					dlgSetup->SetFocus();
-*/
-
-/*
-					CSetupDlg dlgSetup;
-//					CWnd* pWnd=dlgSetup.GetDlgItem();
-					dlgSetup.DoModal();
-					dlgSetup.GetSafeHwnd
-*/
-
-//					CWnd* pOkButton=dlgSetup->GetDlgItem(IDOK);
-//					pOkButton->SetFocus();
-//					if(dlgSetup->DoModal()==IDOK)
-//					{
-//						AfxMessageBox("show",MB_OK);
-//					}
-/*
-
-					dlgSetup.OnlyFfmpeg();
-					if(dlgSetup.DoModal()==IDOK)
-					{
-						m_cENV.UpdateENV();
-						strFfmpegPath=m_cENV.GetENVVal(FFMEPGPATH);
-						strVideoPrefix=m_cENV.GetENVVal(VIDEOPREFIX);
-						strImagePrefix=m_cENV.GetENVVal(IMAGEPREFIX);
-						nWSize=_ttoi(m_cENV.GetENVVal(THUMBNAILWIDTH));
-						strPosterDir=m_cENV.GetENVVal(POSTERDIR);
-						strThumbnailDir=m_cENV.GetENVVal(THUMBNAILDIR);
-					}
-*/
-
-				}
+				CString strVideoThumbnialName=strVideoPrefix+'-'+file.GetFileName().Left(file.GetFileName().Find('.')+1)+"jpg";
+				if(!isFileExsist(strCurrentPath+'\\'+strThumbnailDir,strVideoThumbnialName))
+					MakeThumbnail(strPosterPath,strCurrentPath+'\\'+strThumbnailDir,strVideoPrefix,nWSize);
+				
+				
 			}
         }          
     }  
 //	CString strArq = "-i c:\\tmp\\testfile.mp4 -ss 00:00:01 -f image2 -s 352x240 -vframes 1 c:\\tmp\\test.jpg";
 //	HINSTANCE hNewExe = ShellExecute(NULL,"open","c:\\tmp\\ffmpeg.exe",strArq, NULL, NULL);
 
-//	CDialog::OnOK();
+	CDialog::OnOK();
 }
 
 BOOL CGetposterDlg::CreateDir(CString strDirName, CString strCurrentPath)
@@ -825,3 +791,4 @@ BOOL CGetposterDlg::isFileExsist(CString strFilePatName)
 	BOOL bRet=file.FindFile(strFilePatName);  
     return bRet;
 }
+
