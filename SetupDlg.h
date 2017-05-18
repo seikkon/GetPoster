@@ -14,13 +14,18 @@ class CSetupDlg : public CDialog
 {
 // Construction
 public:
-	void OnlyFfmpeg();
+	void SetReadOnly(BOOL bSet);
 	CSetupDlg(CWnd* pParent = NULL);   // standard constructor
 
 // Dialog Data
 	//{{AFX_DATA(CSetupDlg)
 	enum { IDD = IDD_SETUP_DIALOG };
-		// NOTE: the ClassWizard will add data members here
+	CEdit	m_cVideoPrefix;
+	CEdit	m_cThumbnailWidth;
+	CEdit	m_cThumbnailDir;
+	CEdit	m_cPosterDir;
+	CEdit	m_cImagePrefix;
+	CEdit	m_cAudioPrefix;
 	//}}AFX_DATA
 
 
@@ -36,6 +41,7 @@ public:
 // Implementation
 protected:
 private:
+	BOOL m_bReadOnly;
 	CENVData m_cENV;
 
 	// Generated message map functions

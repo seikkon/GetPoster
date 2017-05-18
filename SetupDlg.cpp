@@ -29,7 +29,7 @@ CSetupDlg::CSetupDlg(CWnd* pParent /*=NULL*/)
 	: CDialog(CSetupDlg::IDD, pParent)
 {
 	EnableAutomation();
-
+	m_bReadOnly=FALSE;
 	//{{AFX_DATA_INIT(CSetupDlg)
 		// NOTE: the ClassWizard will add member initialization here
 	//}}AFX_DATA_INIT
@@ -50,7 +50,12 @@ void CSetupDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialog::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CSetupDlg)
-		// NOTE: the ClassWizard will add DDX and DDV calls here
+	DDX_Control(pDX, IDC_EDIT_VIDEOPREFIX, m_cVideoPrefix);
+	DDX_Control(pDX, IDC_EDIT_THUMBNAILWIDTH, m_cThumbnailWidth);
+	DDX_Control(pDX, IDC_EDIT_THUMBNAILDIR, m_cThumbnailDir);
+	DDX_Control(pDX, IDC_EDIT_POSTERDIR, m_cPosterDir);
+	DDX_Control(pDX, IDC_EDIT_IMAGEPREFIX, m_cImagePrefix);
+	DDX_Control(pDX, IDC_EDIT_AUDIOPREFIX, m_cAudioPrefix);
 	//}}AFX_DATA_MAP
 }
 
@@ -97,6 +102,7 @@ void CSetupDlg::OnButtonFindFile()
 		if(strFileName=="ffmpeg.exe")
 		{
 //			struEnvSetup.strFfmpegDir=strFilePath;
+			m_cENV.SetENVVal(FFMEPGPATH,strFilePath);
 			SetDlgItemText(FFMEPGPATH,strFilePath);
 		}
 		else
@@ -104,7 +110,11 @@ void CSetupDlg::OnButtonFindFile()
 			AfxMessageBox(_T("并不是ffmpeg.exe！请重新选择"), MB_OK);
 		}
 	}
-	UpdateData(FALSE);
+
+	//UpdateData(FALSE);
+	//UpdateData(false)是将变量的值传到控件，表示对话框正在初始化.
+	//UpdateData(TRUE)是从控件中取值到关联的变量, 表示数据正在获取
+
 }   
 
 BOOL CSetupDlg::OnInitDialog() 
@@ -113,6 +123,17 @@ BOOL CSetupDlg::OnInitDialog()
 
 	// TODO: Add extra initialization here
 	//MAKEINTRESOURCE
+	if(m_bReadOnly)
+	{
+		m_cImagePrefix.SetReadOnly(TRUE);
+		m_cPosterDir.SetReadOnly(TRUE);
+		m_cAudioPrefix.SetReadOnly(TRUE);
+		m_cThumbnailDir.SetReadOnly(TRUE);
+		m_cThumbnailWidth.SetReadOnly(TRUE);
+		m_cVideoPrefix.SetReadOnly(TRUE);
+		UpdateData(FALSE);
+	}
+
 	CWnd* pChildWnd = this->GetWindow(GW_CHILD);
 	while(pChildWnd != NULL)
 	{   
@@ -152,19 +173,7 @@ void CSetupDlg::OnOK()
 	CDialog::OnOK();
 }
 
-void CSetupDlg::OnlyFfmpeg()
+void CSetupDlg::SetReadOnly(BOOL bSet)
 {
-	CWnd* pChildWnd = this->GetWindow(GW_CHILD);
-	while(pChildWnd != NULL)
-	{   
-		CHAR szClassName[MAX_PATH];
-		WORD nID = pChildWnd->GetDlgCtrlID();
-		GetClassName(pChildWnd->GetSafeHwnd(),szClassName,MAX_PATH);
-		if(!strcmp(szClassName,"Edit"))
-		{
-			((CEdit* )pChildWnd)->SetReadOnly(TRUE);
-		}
-		pChildWnd = pChildWnd->GetWindow(GW_HWNDNEXT);
-	}
-	OnButtonFindFile();
+	m_bReadOnly=bSet;
 }

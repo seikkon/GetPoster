@@ -410,15 +410,13 @@ void CGetposterDlg::OnOK()
 	while(!isFileExsist(strFfmpegPath))
 	{
 		AfxMessageBox("找不到ffmpeg.exe! 请重新设定",MB_OK);
-		CFileDialog Dlg(TRUE,NULL,"*.*");
-		
-		
-		if(Dlg.DoModal()==IDOK)
-		{		//当你找到文件并确定打开时   
-			strFfmpegPath = Dlg.GetPathName();
-		}
+		CSetupDlg dlg;
+		dlg.SetReadOnly(TRUE);
+		dlg.DoModal();
+		m_cENV.UpdateENV();
+		strFfmpegPath=m_cENV.GetENVVal(FFMEPGPATH);
 	}
-	m_cENV.SetENVVal(FFMEPGPATH,strFfmpegPath);
+
 /*		
 		CSetupDlg *dlgSetup;
 		dlgSetup=new CSetupDlg;
