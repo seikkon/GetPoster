@@ -17,18 +17,18 @@ class CGetposterDlg : public CDialog
 {
 // Construction
 public:
-	BOOL isFileExsist(CString strFilePatName);
-	BOOL isFileExsist(CString strFilePath,CString strFileName);
-	BOOL MakeThumbnail(CString strOriginIamge,CString strThumbNailPath,CString  strPrex,int nSize);
+	BOOL IsFileExsist(CString const& strFilePatName);
+	BOOL IsFileExsist(CString const& strFilePath,CString const& strFileName);
+	BOOL MakeThumbnail(CString const& strOriginIamge,CString const& strThumbNailPath,CString const&  strPrex,int nSize);
 //	CString GetENVValue(CString ENVCtrlID,vector<ENV> &vecENV);
 //	void CreatInitFile(CString strFileName,vector<ENV>& vecInit);
 //	BOOL DoInitENV(CString strFileName,vector<ENV>& vecENV);
-	BOOL CreateDir(CString strDirName,CString CurrentPath);
+	BOOL CreateDir(CString const& strDirName,CString const& CurrentPath);
 	void AddSubDir(HTREEITEM hParent);
 	CString GetFullPath(HTREEITEM hCurrent);
 	void GetDriveDir(HTREEITEM hParent);
 	void GetLogicalDrives(HTREEITEM hParent);
-	CString GetMediaExtType(CString strFileExt);
+	CString GetMediaExtType(CString const& strFileExt);
 
 	CGetposterDlg(CWnd* pParent = NULL);	// standard constructor
 

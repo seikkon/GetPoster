@@ -16,7 +16,7 @@
 
 
 
-#define SETUPFILE "setup.def"
+#define INIFILE "setinfo.ini"
 #define PLAYMARK "playmark_50.png"
 #define FFMPEG "ffmpeg.exe"
 

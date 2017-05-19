@@ -21,17 +21,17 @@ struct ENV{
 class CENVData  
 {
 public:
-	void UpdateENV();
-	BOOL SaveToFile();
-	BOOL LoadFile(CString strFile, vector<ENV> &vecENV);
+//	void UpdateENV();
+//	BOOL SaveToFile();
+//	BOOL LoadFile(CString const& strFile, vector<ENV> &vecENV);
 //	BOOL SaveToData(CString strFile, vector<ENV> &vecENV);
 
-	void CreatInitFile(CString strInitPath);
-	BOOL DoInitENV(CString strFileName,vector<ENV>& vecENV);
+//	void CreatInitFile(CString strInitPath);
+//	BOOL DoInitENV(CString strFileName,vector<ENV>& vecENV);
 	CString GetENVVal(WORD ENVCtrlID);
 	BOOL SetENVVal(WORD ENVCtrlID,CString strValue);
-	BOOL GetAllENV(vector<ENV> &vecENV);
-	BOOL SetAllENV(vector<ENV> &vecENV);
+//	BOOL GetAllENV(vector<ENV> &vecENV);
+//	BOOL SetAllENV(vector<ENV> &vecENV);
 
 	CENVData();
 	virtual ~CENVData();

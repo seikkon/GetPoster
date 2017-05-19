@@ -28,9 +28,14 @@ CENVData::~CENVData()
 {
 
 }
+
+
 BOOL CENVData::DoInitENV(CString strFileName,vector<ENV>& vecInit)
 {
-	//	pstruENV=new ENV;
+	
+	return TRUE;
+}
+/*	//	pstruENV=new ENV;
 	TCHAR strPath[MAX_PATH];
 	GetModuleFileName(NULL,strPath,MAX_PATH);
 	CString strInitPath(strPath);
@@ -84,6 +89,7 @@ void CENVData::CreatInitFile(CString strInitPath)
 		_outFile.close();
 	}
 }
+*/
 
 CString CENVData::GetENVVal(WORD nENVCtrlID)
 {
@@ -110,7 +116,7 @@ BOOL CENVData::SetENVVal(WORD nENVCtrlID,CString strValue)
 	}
 	return TRUE;
 }
-
+/*
 BOOL CENVData::SetAllENV(vector<ENV> &vecENV)
 {
 
@@ -123,12 +129,12 @@ BOOL CENVData::GetAllENV(vector<ENV> &vecENV)
 	return TRUE;
 }
 
-BOOL CENVData::LoadFile(CString strFile, vector<ENV> &vecENV)
+BOOL CENVData::LoadFile(CString const& strFile, vector<ENV> &vecENV)
 {
 
 	return TRUE;
 }
-/*
+
 BOOL CENVData::SaveToFile(CString strFile, vector<ENV> &vecENV)
 {
 	return TRUE;

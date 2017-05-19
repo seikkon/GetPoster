@@ -6,27 +6,20 @@
 --------------------Configuration: getposter - Win32 Debug--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSPE3.tmp" with contents
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP78.tmp" with contents
 [
-/nologo /subsystem:windows /incremental:yes /pdb:"Debug/getposter.pdb" /debug /machine:I386 /out:"Debug/getposter.exe" /pdbtype:sept 
-".\Debug\ENVData.obj"
-".\Debug\getposter.obj"
-".\Debug\getposterDlg.obj"
-".\Debug\SetupDlg.obj"
-".\Debug\StdAfx.obj"
-".\Debug\getposter.res"
+/nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /FR"Debug/" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"C:\My Projects\GetPoster\ENVData.cpp"
 ]
-Creating command line "link.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSPE3.tmp"
+Creating command line "cl.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP78.tmp" 
 <h3>Output Window</h3>
-Linking...
-Creating command line "bscmake.exe /nologo /o"Debug/getposter.bsc"  ".\Debug\StdAfx.sbr" ".\Debug\ENVData.sbr" ".\Debug\getposter.sbr" ".\Debug\getposterDlg.sbr" ".\Debug\SetupDlg.sbr""
-Creating browse info file...
-<h3>Output Window</h3>
+Compiling...
+ENVData.cpp
 
 
 
 <h3>Results</h3>
-getposter.exe - 0 error(s), 0 warning(s)
+ENVData.obj - 0 error(s), 0 warning(s)
 </pre>
 </body>
 </html>

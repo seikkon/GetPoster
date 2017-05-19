@@ -407,7 +407,7 @@ void CGetposterDlg::OnOK()
 	strPosterDir=m_cENV.GetENVVal(POSTERDIR);
 	strThumbnailDir=m_cENV.GetENVVal(THUMBNAILDIR);
 
-	while(!isFileExsist(strFfmpegPath))
+	while(!IsFileExsist(strFfmpegPath))
 	{
 		AfxMessageBox("找不到ffmpeg.exe! 请重新设定",MB_OK);
 		CSetupDlg dlg;
@@ -446,14 +446,14 @@ void CGetposterDlg::OnOK()
 			CString strFileType= GetMediaExtType(strFileExt);
 			if(strFileType=="picture")
 			{
-				if(!isFileExsist(strCurrentPath+'\\'+strThumbnailDir,strImagePrefix+'-'+file.GetFileName()))
+				if(!IsFileExsist(strCurrentPath+'\\'+strThumbnailDir,strImagePrefix+'-'+file.GetFileName()))
 					MakeThumbnail(file.GetFilePath(),strCurrentPath+'\\'+strThumbnailDir,strImagePrefix,nWSize);			
 			}
 			else 
 			{
 				CString strPosterPath;//strSrcPath,strPosterPath;
 				strPosterPath=strCurrentPath+'\\'+strPosterDir+'\\'+file.GetFileName().Left(file.GetFileName().Find('.')+1)+"jpg";
-				if(!isFileExsist(strPosterPath))
+				if(!IsFileExsist(strPosterPath))
 				{
 					
 					CString strArq;
@@ -467,7 +467,7 @@ void CGetposterDlg::OnOK()
 					}
 				}
 				CString strVideoThumbnialName=strVideoPrefix+'-'+file.GetFileName().Left(file.GetFileName().Find('.')+1)+"jpg";
-				if(!isFileExsist(strCurrentPath+'\\'+strThumbnailDir,strVideoThumbnialName))
+				if(!IsFileExsist(strCurrentPath+'\\'+strThumbnailDir,strVideoThumbnialName))
 					MakeThumbnail(strPosterPath,strCurrentPath+'\\'+strThumbnailDir,strVideoPrefix,nWSize);
 				
 				
@@ -480,7 +480,7 @@ void CGetposterDlg::OnOK()
 	CDialog::OnOK();
 }
 
-BOOL CGetposterDlg::CreateDir(CString strDirName, CString strCurrentPath)
+BOOL CGetposterDlg::CreateDir(CString const& strDirName, CString const& strCurrentPath)
 {
     CFileFind file; 
  	BOOL bExsist=file.FindFile(strCurrentPath+'\\'+strDirName,0);
@@ -499,7 +499,7 @@ BOOL CGetposterDlg::CreateDir(CString strDirName, CString strCurrentPath)
 }
 
 //void CGetposterDlg::GetMediaExtension(vector<wstring>& vctExtensions, LPCWSTR lpVideoType)  
-CString CGetposterDlg::GetMediaExtType(CString strFileExt)
+CString CGetposterDlg::GetMediaExtType(CString const& strFileExt)
 {  
 	HKEY hKey = NULL;  
 	DWORD dwType  = REG_SZ;  
@@ -676,7 +676,7 @@ CString CGetposterDlg::GetENVValue(CString strENVCtrlID,vector<ENV> &vecENV)
 }
 */
 
-BOOL CGetposterDlg::MakeThumbnail(CString strOriginImgPath, CString strThumbnailPath, CString strPrefix, int nSize)
+BOOL CGetposterDlg::MakeThumbnail(CString const& strOriginImgPath, CString const& strThumbnailPath, CString const& strPrefix, int nSize)
 {
     const WIDTH = 200;
     const HEIGHT = 200;
@@ -776,17 +776,28 @@ BOOL CGetposterDlg::MakeThumbnail(CString strOriginImgPath, CString strThumbnail
     return TRUE;
 }
 
-BOOL CGetposterDlg::isFileExsist(CString strFilePath, CString strFileName)
+BOOL CGetposterDlg::IsFileExsist(CString const& strFilePath, CString const& strFileName)
 {
 	CFileFind file;
 	BOOL bRet=file.FindFile(strFilePath+'\\'+strFileName);
 	return bRet;
 }
 
-BOOL CGetposterDlg::isFileExsist(CString strFilePatName)
+BOOL CGetposterDlg::IsFileExsist(CString const& strFilePatName)
 {
 	CFileFind file;
 	BOOL bRet=file.FindFile(strFilePatName);  
     return bRet;
 }
 
+bool CGetposterDlg::IsDirectoryExists(CString const& strPath)
+{ 
+	//判断是否存在
+	if(!PathFileExists(strPath))
+		return FALSE;
+	
+	//判断是否为目录
+	DWORD attributes = ::GetFileAttributes(strPath);  
+	attributes &= FILE_ATTRIBUTE_DIRECTORY;
+	return attributes == FILE_ATTRIBUTE_DIRECTORY;
+}
