@@ -168,7 +168,7 @@ void CSetupDlg::OnOK()
 		}
 		pChildWnd = pChildWnd->GetWindow(GW_HWNDNEXT);
 	}
-	m_cENV.SaveToFile();
+//	m_cENV.SaveToFile();
 
 	CDialog::OnOK();
 }

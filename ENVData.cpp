@@ -5,6 +5,7 @@
 #include "stdafx.h"
 #include "getposter.h"
 #include "ENVData.h"
+#include "DoIniFile.h"
 #include <fstream>
 
 using namespace std;
@@ -21,7 +22,7 @@ static char THIS_FILE[]=__FILE__;
 
 CENVData::CENVData()
 {
-	DoInitENV(SETUPFILE,m_vecENV);
+	DoInitENV(INIFILE,m_vecENV);
 }
 
 CENVData::~CENVData()
@@ -32,7 +33,20 @@ CENVData::~CENVData()
 
 BOOL CENVData::DoInitENV(CString strFileName,vector<ENV>& vecInit)
 {
-	
+	CDoIniFile cIniFile;
+	vector<CString> vecSecData;
+	cIniFile.GetSectionString(SECTIONA,vecSecData,INIFILE);
+	vector<CString>::iterator iteData;
+	struct ENV struInitENV;
+//	vector<ENV>::iterator iteInit;
+//	for(iteData=vecSecData.begin(),iteInit=vecInit.begin();iteData!=vecSecData.end();iteData++,iteInit++)
+	for(iteData=vecSecData.begin();iteData!=vecSecData.end();iteData++)
+	{
+		CString str=*iteData;
+		struInitENV.nCtrlID=_ttoi(str.Left(str.Find('=')));
+		struInitENV.strValue=str.Right(str.Find('=')-1);
+		vecInit.push_back(struInitENV);
+	}
 	return TRUE;
 }
 /*	//	pstruENV=new ENV;
@@ -139,7 +153,7 @@ BOOL CENVData::SaveToFile(CString strFile, vector<ENV> &vecENV)
 {
 	return TRUE;
 }
-*/
+
 
 BOOL CENVData::SaveToFile()
 {
@@ -201,3 +215,4 @@ void CENVData::UpdateENV()
 		_inFile.close();
 	}
 }
+*/

@@ -5,7 +5,9 @@
 #include "stdafx.h"
 #include "getposter.h"
 #include "DoIniFile.h"
+//#include <VECTOR>
 #include <fstream>
+//using namespace std;
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -17,28 +19,29 @@ static char THIS_FILE[]=__FILE__;
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-DoIniFile::DoIniFile()
+CDoIniFile::CDoIniFile()
 {
 	CString strIniPathName;
 	//		TCHAR szPath[MAX_PATH];
 	GetModuleFileName(NULL,strIniPathName.GetBuffer(MAX_PATH),MAX_PATH);
 	//	(strrchr(strIniPathName.GetBuffer(MAX_PATH),'\\'))[1] = 0;   
-	strIniPathName.SetAt(strIniPathName.ReverseFind('\\')+1,'\0');
+	//strIniPathName=strIniPathName.Left(strIniPathName.ReverseFind('\\'));
+	int pos =strIniPathName.ReverseFind('\\');
+	CString str=strIniPathName.Right(10);
 	//strcat(szPath,strIniFileName.GetBuffer(MAX_PATH));
 	//strIniPathName=szPath;
-	strIniPathName=strIniPathName +INIFILE;
-	
+	strIniPathName += "test";
 	CFileFind cFile;
 	if(!cFile.FindFile(strIniPathName))
 		MakeIniFile(strIniPathName);
 }
 
-DoIniFile::~DoIniFile()
+CDoIniFile::~CDoIniFile()
 {
 
 }
 
-void DoIniFile::MakeIniFile(CString const& strIniPathName)
+void CDoIniFile::MakeIniFile(CString strIniPathName)
 {
 //	CString strIniPathName;
 	//		TCHAR szPath[MAX_PATH];
@@ -67,7 +70,7 @@ void DoIniFile::MakeIniFile(CString const& strIniPathName)
 		::WritePrivateProfileSection(_T("Output"),strData.GetBuffer(strData.GetLength()),strIniPathName.GetBuffer(strIniPathName.GetLength()));
 }
 
-BOOL DoIniFile::WriteString(CString const& strSection, CString const& strKey, CString const& strAdd, CString const& strIniFileName)
+BOOL CDoIniFile::WriteString(CString strSection, CString strKey, CString strAdd, CString strIniFileName)
 {
 	CString strIniPathName;
 	GetModuleFileName(NULL,strIniPathName.GetBuffer(MAX_PATH),MAX_PATH);
@@ -77,7 +80,8 @@ BOOL DoIniFile::WriteString(CString const& strSection, CString const& strKey, CS
     return ::WritePrivateProfileString(strSection.GetBuffer(strSection.GetLength()),strKey.GetBuffer(strKey.GetLength()),strAdd.GetBuffer(strAdd.GetLength()),strIniPathName.GetBuffer(strIniPathName.GetLength())); 
 }
 
-DWORD DoIniFile::ReadString(const CString &strSection, const CString &strKey, const CString &strRead, const CString &strIniFileName)
+
+DWORD CDoIniFile::ReadString(CString strSection,CString strKey,CString& strRead,CString strIniFileName)
 {
 	CString strIniPathName;
 	GetModuleFileName(NULL,strIniPathName.GetBuffer(MAX_PATH),MAX_PATH);
@@ -85,4 +89,53 @@ DWORD DoIniFile::ReadString(const CString &strSection, const CString &strKey, co
 	strIniPathName=strIniPathName +strIniFileName;
 	
     return ::GetPrivateProfileString(strSection.GetBuffer(strSection.GetLength()), strKey.GetBuffer(strKey.GetLength()),NULL,strRead.GetBuffer(MAX_PATH),MAX_PATH,strIniPathName.GetBuffer(strIniPathName.GetLength()));  
+}
+
+BOOL CDoIniFile::WriteString(CString strSection,int nKey, CString strAdd, CString strIniFileName)
+{
+	CString strIniPathName;
+	GetModuleFileName(NULL,strIniPathName.GetBuffer(MAX_PATH),MAX_PATH);
+	strIniPathName.SetAt(strIniPathName.ReverseFind('\\')+1,'\0');
+	strIniPathName=strIniPathName +strIniFileName;
+	CString strKey;
+	strKey.Format("%d",nKey);
+    return ::WritePrivateProfileString(strSection.GetBuffer(strSection.GetLength()),strKey.GetBuffer(strKey.GetLength()),strAdd.GetBuffer(strAdd.GetLength()),strIniPathName.GetBuffer(strIniPathName.GetLength())); 
+}
+
+DWORD CDoIniFile::ReadString(CString strSection,int nKey,CString& strRead,CString strIniFileName)
+{
+	CString strIniPathName;
+	GetModuleFileName(NULL,strIniPathName.GetBuffer(MAX_PATH),MAX_PATH);
+	strIniPathName.SetAt(strIniPathName.ReverseFind('\\')+1,'\0');
+	strIniPathName=strIniPathName +strIniFileName;
+	CString strKey,strBuff;
+	strKey.Format("%d",nKey);
+	DWORD nRet= ::GetPrivateProfileString(strSection.GetBuffer(strSection.GetLength()), strKey.GetBuffer(strKey.GetLength()),NULL,strBuff.GetBuffer(MAX_PATH),MAX_PATH,strIniPathName.GetBuffer(strIniPathName.GetLength()));  
+	strRead=strBuff;
+
+    return nRet;
+}
+
+DWORD CDoIniFile::GetSectionString(CString strSection, vector<CString>& vecSecData, CString strIniFileName)
+{
+	CString strIniPathName;
+	GetModuleFileName(NULL,strIniPathName.GetBuffer(MAX_PATH),MAX_PATH);
+	strIniPathName.SetAt(strIniPathName.ReverseFind('\\')+1,'\0');
+	strIniPathName=strIniPathName +strIniFileName;
+	const int BUFFSIZE=2048;
+	CHAR szBuff[BUFFSIZE];
+	DWORD nRet= ::GetPrivateProfileSection(strSection.GetBuffer(strSection.GetLength()),szBuff,BUFFSIZE,strIniPathName.GetBuffer(strIniPathName.GetLength()));  
+	CHAR *pBuff=szBuff;
+	size_t size=strlen(pBuff);
+	int i=0; //i记录总数据行数
+	while(size) //当取到的行长度不为0时，说明此行存在，继续取值
+	{
+		CString str=pBuff;
+		vecSecData.push_back(str);
+		pBuff+=size+1;
+		size=strlen(pBuff);
+		i++;
+	} 
+	
+    return nRet;
 }

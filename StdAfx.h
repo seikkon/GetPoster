@@ -15,10 +15,10 @@
 #define __VC6_ATL_IMAGE_H__ 1  
 
 
-
-#define INIFILE "setinfo.ini"
-#define PLAYMARK "playmark_50.png"
-#define FFMPEG "ffmpeg.exe"
+#define SECTIONA _T("OutPut")
+#define INIFILE _T("setinfo.ini")
+#define PLAYMARK _T("playmark_50.png")
+#define FFMPEG _T("ffmpeg.exe")
 
 #define THUMBNAILWIDTH         1024
 #define VIDEOPREFIX            1017

@@ -211,8 +211,8 @@ void CGetposterDlg::OnSysCommand(UINT nID, LPARAM lParam)
 	else if ((nID & 0xFFF0) == IDM_SETUPDLG)
 	{
 		CSetupDlg dlgSetup;
-		if(dlgSetup.DoModal()==IDOK)
-			m_cENV.UpdateENV();
+//		if(dlgSetup.DoModal()==IDOK)
+//			m_cENV.UpdateENV();
 	}
 	else
 	{
@@ -413,7 +413,7 @@ void CGetposterDlg::OnOK()
 		CSetupDlg dlg;
 		dlg.SetReadOnly(TRUE);
 		dlg.DoModal();
-		m_cENV.UpdateENV();
+//		m_cENV.UpdateENV();
 		strFfmpegPath=m_cENV.GetENVVal(FFMEPGPATH);
 	}
 
@@ -789,6 +789,7 @@ BOOL CGetposterDlg::IsFileExsist(CString const& strFilePatName)
 	BOOL bRet=file.FindFile(strFilePatName);  
     return bRet;
 }
+/*
 
 bool CGetposterDlg::IsDirectoryExists(CString const& strPath)
 { 
@@ -801,3 +802,4 @@ bool CGetposterDlg::IsDirectoryExists(CString const& strPath)
 	attributes &= FILE_ATTRIBUTE_DIRECTORY;
 	return attributes == FILE_ATTRIBUTE_DIRECTORY;
 }
+*/

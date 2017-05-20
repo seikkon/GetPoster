@@ -15,7 +15,7 @@ struct ENV{
 	WORD nCtrlID;
 //	CString strCtrlID;
 	CString strValue;
-	CString strContent;
+//	CString strContent;
 };
 
 class CENVData  
@@ -27,7 +27,7 @@ public:
 //	BOOL SaveToData(CString strFile, vector<ENV> &vecENV);
 
 //	void CreatInitFile(CString strInitPath);
-//	BOOL DoInitENV(CString strFileName,vector<ENV>& vecENV);
+ 	BOOL DoInitENV(CString strFileName,vector<ENV>& vecENV);
 	CString GetENVVal(WORD ENVCtrlID);
 	BOOL SetENVVal(WORD ENVCtrlID,CString strValue);
 //	BOOL GetAllENV(vector<ENV> &vecENV);
