@@ -139,7 +139,8 @@ BOOL CSetupDlg::OnInitDialog()
 	{   
 		if(!m_cENV.GetENVVal(pChildWnd->GetDlgCtrlID()).IsEmpty())
 		{
-			pChildWnd->SetWindowText(m_cENV.GetENVVal(pChildWnd->GetDlgCtrlID())); //ID号与资源匹配
+			CString str=m_cENV.GetENVVal(pChildWnd->GetDlgCtrlID());
+			pChildWnd->SetWindowText(str); //ID号与资源匹配
 		}
 		pChildWnd = pChildWnd->GetWindow(GW_HWNDNEXT);
 	}
@@ -160,7 +161,7 @@ void CSetupDlg::OnOK()
 		if(strText.IsEmpty())
 		{
 			AfxMessageBox("设定不能空白！请重新输入",MB_OK);
-			break;
+			return;
 		}
 		else
 		{

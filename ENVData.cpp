@@ -5,7 +5,7 @@
 #include "stdafx.h"
 #include "getposter.h"
 #include "ENVData.h"
-#include "DoIniFile.h"
+#include "IniFile.h"
 #include <fstream>
 
 using namespace std;
@@ -33,9 +33,9 @@ CENVData::~CENVData()
 
 BOOL CENVData::DoInitENV(CString strFileName,vector<ENV>& vecInit)
 {
-	CDoIniFile cIniFile;
+	CIniFile cIniFile;
 	vector<CString> vecSecData;
-	cIniFile.GetSectionString(SECTIONA,vecSecData,INIFILE);
+	cIniFile.GetSectionString(SECTIONA,vecSecData);
 	vector<CString>::iterator iteData;
 	struct ENV struInitENV;
 //	vector<ENV>::iterator iteInit;
@@ -44,7 +44,7 @@ BOOL CENVData::DoInitENV(CString strFileName,vector<ENV>& vecInit)
 	{
 		CString str=*iteData;
 		struInitENV.nCtrlID=_ttoi(str.Left(str.Find('=')));
-		struInitENV.strValue=str.Right(str.Find('=')-1);
+		struInitENV.strValue=str.Right(str.GetLength()-str.Find('=')-1);
 		vecInit.push_back(struInitENV);
 	}
 	return TRUE;
@@ -121,14 +121,18 @@ CString CENVData::GetENVVal(WORD nENVCtrlID)
 BOOL CENVData::SetENVVal(WORD nENVCtrlID,CString strValue)
 {
 	vector<ENV>::iterator ite;
+
 	for (ite = m_vecENV.begin(); ite != m_vecENV.end();ite++)
 	{
 		if(ite->nCtrlID==nENVCtrlID)
 		{
 			ite->strValue=strValue;
+			CIniFile cIniFile;
+			cIniFile.WriteString(SECTIONA,nENVCtrlID,strValue);
+			return TRUE;
 		}
 	}
-	return TRUE;
+	return FALSE;
 }
 /*
 BOOL CENVData::SetAllENV(vector<ENV> &vecENV)

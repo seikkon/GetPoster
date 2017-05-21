@@ -211,8 +211,7 @@ void CGetposterDlg::OnSysCommand(UINT nID, LPARAM lParam)
 	else if ((nID & 0xFFF0) == IDM_SETUPDLG)
 	{
 		CSetupDlg dlgSetup;
-//		if(dlgSetup.DoModal()==IDOK)
-//			m_cENV.UpdateENV();
+		dlgSetup.DoModal();
 	}
 	else
 	{
