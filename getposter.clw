@@ -13,9 +13,9 @@ Class2=CGetposterDlg
 Class3=CAboutDlg
 
 ResourceCount=4
-Resource1=IDD_GETPOSTER_DIALOG
+Resource1=IDD_ABOUTBOX
 Resource2=IDR_MAINFRAME
-Resource3=IDD_ABOUTBOX
+Resource3=IDD_GETPOSTER_DIALOG
 Class4=CSetupDlg
 Resource4=IDD_SETUP_DIALOG
 

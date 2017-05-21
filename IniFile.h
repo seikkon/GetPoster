@@ -15,9 +15,10 @@ class CIniFile
 {
 public:
 	DWORD GetSectionString(CString strSection,vector<CString>& vecSecData);
-	BOOL WriteString(CString strSection,int nKey, CString strAdd);
-	DWORD ReadString(CString strSection,int nKey, CString& strRead);
-	BOOL WriteString(CString strSection, CString  strKey, CString strAdd);
+
+//	BOOL WriteString(CString strSection,int nKey, CString strAdd);
+//	DWORD ReadString(CString strSection,int nKey, CString& strRead);
+	BOOL WriteString(CString strSection, CString  strKey, CString& strAdd);
 	DWORD ReadString(CString strSection, CString  strKey, CString& strRead);
 	void MakeIniFile(CString strIniPathName);
 

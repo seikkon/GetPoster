@@ -12,10 +12,11 @@
 using namespace std;
 
 struct ENV{
+
+	CString strKey;
 	WORD nCtrlID;
-//	CString strCtrlID;
 	CString strValue;
-//	CString strContent;
+ 	CString strContent;
 };
 
 class CENVData  

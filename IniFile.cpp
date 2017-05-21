@@ -51,16 +51,30 @@ void CIniFile::MakeIniFile(CString strIniPathName)
 		_outFile.close();
 		
 		CString strData;
-		CString arrayData[7]={"1024=200","1018=audio","1011=C:\\ffmpeg.exe","1019=image","1013=Poster","1012=Thumbnail","1017=video"};
+		CString arrayCtrlID[7]={"THUMBNAILWIDTH=1024","AUDIOPREFIX=1018","FFMEPGPATH=1011","IMAGEPREFIX=1019","POSTERDIR=1013","THUMBNAILDIR=1012","VIDEOPREFIX=1017"};
+		CString arrayVal[7]={"THUMBNAILWIDTH=200","AUDIOPREFIX=audio","FFMEPGPATH=C:\\ffmpeg.exe","IMAGEPREFIX=image","POSTERDIR=Poster","THUMBNAILDIR=Thumbnail","VIDEOPREFIX=video"};
+		CString arrayContent[7]={"THUMBNAILWIDTH=缩图宽度","AUDIOPREFIX=音档前置","FFMEPGPATH=FFMEPG档","IMAGEPREFIX=图档前置","POSTERDIR=海报目录","THUMBNAILDIR=缩图目录","VIDEOPREFIX=视频前置"};
 		for(int i=0;i<7;i++)
 		{
-			strData+=arrayData[i];
+			strData+=arrayCtrlID[i];
 			strData+='\0';
 		}
-		::WritePrivateProfileSection(_T("Output"),strData.GetBuffer(strData.GetLength()),strIniPathName.GetBuffer(strIniPathName.GetLength()));
+		::WritePrivateProfileSection(SECTIONA,strData.GetBuffer(strData.GetLength()),strIniPathName.GetBuffer(strIniPathName.GetLength()));
+		for(int i=0;i<7;i++)
+		{
+			strData+=arrayVal[i];
+			strData+='\0';
+		}
+		::WritePrivateProfileSection(SECTIONB,strData.GetBuffer(strData.GetLength()),strIniPathName.GetBuffer(strIniPathName.GetLength()));
+		for(int i=0;i<7;i++)
+		{
+			strData+=arrayContent[i];
+			strData+='\0';
+		}
+		::WritePrivateProfileSection(SECTIONC,strData.GetBuffer(strData.GetLength()),strIniPathName.GetBuffer(strIniPathName.GetLength()));
 }
 
-BOOL CIniFile::WriteString(CString strSection, CString strKey, CString strAdd)
+BOOL CIniFile::WriteString(CString strSection, CString strKey, CString& strAdd)
 {
 
     return ::WritePrivateProfileString(strSection.GetBuffer(strSection.GetLength()),strKey.GetBuffer(strKey.GetLength()),strAdd.GetBuffer(strAdd.GetLength()),m_strIniPathName.GetBuffer(m_strIniPathName.GetLength())); 
@@ -72,8 +86,9 @@ DWORD CIniFile::ReadString(CString strSection,CString strKey,CString& strRead)
 	
     return ::GetPrivateProfileString(strSection.GetBuffer(strSection.GetLength()), strKey.GetBuffer(strKey.GetLength()),NULL,strRead.GetBuffer(MAX_PATH),MAX_PATH,m_strIniPathName.GetBuffer(m_strIniPathName.GetLength()));  
 }
+/*
 
-BOOL CIniFile::WriteString(CString strSection,int nKey, CString strAdd)
+BOOL CIniFile::WriteString(CString strSection,int nKey, CString& strAdd)
 {
 // 	CString strIniPathName;
 // 	GetModuleFileName(NULL,strIniPathName.GetBuffer(MAX_PATH),MAX_PATH);
@@ -94,6 +109,7 @@ DWORD CIniFile::ReadString(CString strSection,int nKey,CString& strRead)
 	
     return nRet;
 }
+*/
 
 DWORD CIniFile::GetSectionString(CString strSection, vector<CString>& vecSecData)
 {

@@ -35,11 +35,27 @@ BOOL CENVData::DoInitENV(CString strFileName,vector<ENV>& vecInit)
 {
 	CIniFile cIniFile;
 	vector<CString> vecSecData;
-	cIniFile.GetSectionString(SECTIONA,vecSecData);
 	vector<CString>::iterator iteData;
 	struct ENV struInitENV;
 //	vector<ENV>::iterator iteInit;
 //	for(iteData=vecSecData.begin(),iteInit=vecInit.begin();iteData!=vecSecData.end();iteData++,iteInit++)
+	cIniFile.GetSectionString(SECTIONA,vecSecData);
+	for(iteData=vecSecData.begin();iteData!=vecSecData.end();iteData++)
+	{
+		CString str=*iteData;
+		struInitENV.nCtrlID=_ttoi(str.Left(str.Find('=')));
+		struInitENV.strValue=str.Right(str.GetLength()-str.Find('=')-1);
+		vecInit.push_back(struInitENV);
+	}
+	cIniFile.GetSectionString(SECTIONB,vecSecData);
+	for(iteData=vecSecData.begin();iteData!=vecSecData.end();iteData++)
+	{
+		CString str=*iteData;
+		struInitENV.nCtrlID=_ttoi(str.Left(str.Find('=')));
+		struInitENV.strValue=str.Right(str.GetLength()-str.Find('=')-1);
+		vecInit.push_back(struInitENV);
+	}
+	cIniFile.GetSectionString(SECTIONC,vecSecData);
 	for(iteData=vecSecData.begin();iteData!=vecSecData.end();iteData++)
 	{
 		CString str=*iteData;
