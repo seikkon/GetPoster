@@ -21,15 +21,11 @@ static char THIS_FILE[]=__FILE__;
 CIniFile::CIniFile()
 {
 	
-	TCHAR szPath[MAX_PATH];
-	GetModuleFileName(NULL,szPath,MAX_PATH);
-	CString strIniPathName(szPath);
-	strIniPathName=strIniPathName.Left(strIniPathName.ReverseFind('\\')+1);
-	strIniPathName += INIFILE;
-	m_strIniPathName=strIniPathName;
+
 	CFileFind cFile;
-	if(!cFile.FindFile(m_strIniPathName))
-		MakeIniFile(m_strIniPathName);
+	if(!cFile.FindFile(GetIniPathName(INIFILE)))
+		MakeIniFile(INIFILE);
+//	MakeIniFile("test.ini");
 }
 
 CIniFile::~CIniFile()
@@ -38,53 +34,63 @@ CIniFile::~CIniFile()
 }
 
 
-void CIniFile::MakeIniFile(CString strIniPathName)
+void CIniFile::MakeIniFile(CString strIniFileName)
 {
-
-	
+	CString strIniPathName=GetIniPathName(strIniFileName);
 	CFileFind cFile;
-	if(cFile.FindFile(strIniPathName))
+	if(cFile.FindFile(GetIniPathName(strIniPathName)))
 		if(AfxMessageBox("初始化档案存在！是否覆盖？",MB_OK|MB_OKCANCEL)==IDCANCEL)
 			return;
 		
 		ofstream _outFile(strIniPathName,ios::out);
 		_outFile.close();
 		
-		CString strData;
-		CString arrayCtrlID[7]={"THUMBNAILWIDTH=1024","AUDIOPREFIX=1018","FFMEPGPATH=1011","IMAGEPREFIX=1019","POSTERDIR=1013","THUMBNAILDIR=1012","VIDEOPREFIX=1017"};
-		CString arrayVal[7]={"THUMBNAILWIDTH=200","AUDIOPREFIX=audio","FFMEPGPATH=C:\\ffmpeg.exe","IMAGEPREFIX=image","POSTERDIR=Poster","THUMBNAILDIR=Thumbnail","VIDEOPREFIX=video"};
-		CString arrayContent[7]={"THUMBNAILWIDTH=缩图宽度","AUDIOPREFIX=音档前置","FFMEPGPATH=FFMEPG档","IMAGEPREFIX=图档前置","POSTERDIR=海报目录","THUMBNAILDIR=缩图目录","VIDEOPREFIX=视频前置"};
+ 		_TCHAR szBuff[255];
+		CString strData=_T("");
+		CString arraySection[7]={_T("FFMEPGPATH"),_T("THUMBNAILWIDTH"),_T("POSTERDIR"),_T("THUMBNAILDIR"),_T("IMAGEPREFIX"),_T("VIDEOPREFIX"),_T("AUDIOPREFIX")};
+		CString arrayCtrlID[7]={_T("1011"),_T("1024"),_T("1013"),_T("1012"),_T("1019"),_T("1017"),_T("1018")};
+		CString arrayVal[7]={_T("C:\\ffmpeg.exe"),_T("200"),_T("Poster"),_T("Thumbnail"),_T("image"),_T("video"),_T("audio")};
+		CString arrayContent[7]={_T("FFMEPG档"),_T("缩图宽度"),_T("海报目录"),_T("缩图目录"),_T("图档前置"),_T("视频前置"),_T("音档前置")};
 		for(int i=0;i<7;i++)
 		{
-			strData+=arrayCtrlID[i];
-			strData+='\0';
+
+			//strData+=_T("CtrlID=")+_T(arrayCtrlID[i])+_T('\0');
+			//strData+=_T("Value=")+_T(arrayVal[i])+_T('\0');
+			//strData+=_T("Content=")+_T(arrayContent[i])+_T('\0');
+			//strData="test";
+			
+//			strData.Format("CtrlID=%s'\0'Value=%s'\0'Content=%s'\0'",arrayCtrlID[i],arrayVal[i],arrayContent[i]);
+			//int nLen=strData.GetLength();
+			//char *ch,*sec,*name;
+			CHAR szbuff[80]={"中文"};
+			CString str=_T("中文");
+			int nLen=str.GetLength();
+			_TCHAR szStr[80]={0};
+			strcat(szStr,str.GetBuffer(str.GetLength()));
+			//ch=strData.GetBuffer(nLen);
+			//sec=arraySection[i].GetBuffer(arraySection[i].GetLength());
+			//name=strIniPathName.GetBuffer(strIniPathName.GetLength());
+			//ch+=_T('\0');
+ 			::WritePrivateProfileSection(arraySection[i],szbuff,strIniPathName);
+			//::WritePrivateProfileSection(arraySection[i],szBuff,strIniPathName.GetBuffer(strIniPathName.GetLength()));
+ 			//::WritePrivateProfileSection(arraySection[i],szBuff,strIniPathName.GetBuffer(strIniPathName.GetLength()));
+//			strData=_T("");
 		}
-		::WritePrivateProfileSection(SECTIONA,strData.GetBuffer(strData.GetLength()),strIniPathName.GetBuffer(strIniPathName.GetLength()));
-		for(int i=0;i<7;i++)
-		{
-			strData+=arrayVal[i];
-			strData+='\0';
-		}
-		::WritePrivateProfileSection(SECTIONB,strData.GetBuffer(strData.GetLength()),strIniPathName.GetBuffer(strIniPathName.GetLength()));
-		for(int i=0;i<7;i++)
-		{
-			strData+=arrayContent[i];
-			strData+='\0';
-		}
-		::WritePrivateProfileSection(SECTIONC,strData.GetBuffer(strData.GetLength()),strIniPathName.GetBuffer(strIniPathName.GetLength()));
 }
 
-BOOL CIniFile::WriteString(CString strSection, CString strKey, CString& strAdd)
+BOOL CIniFile::WriteString(CString strSection, CString strKey, CString& strAdd,CString strIniFileName)
 {
-
-    return ::WritePrivateProfileString(strSection.GetBuffer(strSection.GetLength()),strKey.GetBuffer(strKey.GetLength()),strAdd.GetBuffer(strAdd.GetLength()),m_strIniPathName.GetBuffer(m_strIniPathName.GetLength())); 
+	CString strIniPathName;
+	strIniPathName=GetIniPathName(strIniFileName);
+    return ::WritePrivateProfileString(strSection.GetBuffer(strSection.GetLength()),strKey.GetBuffer(strKey.GetLength()),strAdd.GetBuffer(strAdd.GetLength()),strIniPathName.GetBuffer(strIniPathName.GetLength())); 
 }
 
 
-DWORD CIniFile::ReadString(CString strSection,CString strKey,CString& strRead)
+DWORD CIniFile::ReadString(CString strSection,CString strKey,CString& strRead,CString strIniFileName)
 {
-	
-    return ::GetPrivateProfileString(strSection.GetBuffer(strSection.GetLength()), strKey.GetBuffer(strKey.GetLength()),NULL,strRead.GetBuffer(MAX_PATH),MAX_PATH,m_strIniPathName.GetBuffer(m_strIniPathName.GetLength()));  
+	CString strIniPathName;
+	strIniPathName=GetIniPathName(strIniFileName);	
+    return ::GetPrivateProfileString(strSection.GetBuffer(strSection.GetLength()), strKey.GetBuffer(strKey.GetLength()),NULL,strRead.GetBuffer(MAX_PATH),MAX_PATH,strIniPathName.GetBuffer(strIniPathName.GetLength()));  
 }
 /*
 
@@ -111,12 +117,15 @@ DWORD CIniFile::ReadString(CString strSection,int nKey,CString& strRead)
 }
 */
 
-DWORD CIniFile::GetSectionString(CString strSection, vector<CString>& vecSecData)
+DWORD CIniFile::GetSectionString(CString strSection, vector<CString>& vecSecData,CString strIniFileName)
 {
 
-	const int BUFFSIZE=2048;
+	CString strIniPathName;
+	strIniPathName=GetIniPathName(strIniFileName);
+
+	const int BUFFSIZE=255;
 	CHAR szBuff[BUFFSIZE];
-	DWORD nRet= ::GetPrivateProfileSection(strSection.GetBuffer(strSection.GetLength()),szBuff,BUFFSIZE,m_strIniPathName.GetBuffer(m_strIniPathName.GetLength()));  
+	DWORD nRet= ::GetPrivateProfileSection(strSection.GetBuffer(strSection.GetLength()),szBuff,BUFFSIZE,strIniPathName.GetBuffer(strIniPathName.GetLength()));  
 	CHAR *pBuff=szBuff;
 	size_t size=strlen(pBuff);
 	int i=0; //i记录总数据行数
@@ -130,4 +139,37 @@ DWORD CIniFile::GetSectionString(CString strSection, vector<CString>& vecSecData
 	} 
 	
     return nRet;
+}
+
+BOOL CIniFile::GetSectionName(vector<CString>& vecSecName,CString strIniFileName)
+{
+	CString strIniPathName;
+	strIniPathName=GetIniPathName(strIniFileName);
+
+	const int BUFFSIZE=255;
+	CHAR szBuff[BUFFSIZE];
+	DWORD nRet= ::GetPrivateProfileSectionNames(szBuff,BUFFSIZE,strIniPathName.GetBuffer(strIniPathName.GetLength()));  
+	CHAR *pBuff=szBuff;
+
+	size_t size=strlen(pBuff);
+	for(int i=0;size!=0;i++) //i记录总数据行数,当取到的行长度不为0时，说明此行存在，继续取值
+	{
+		CString str=pBuff;
+		vecSecName.push_back(str);
+		pBuff+=size+1;
+		size=strlen(pBuff);
+	} 
+	
+    return nRet;
+
+}
+
+CString CIniFile::GetIniPathName(CString strIniFileName)
+{
+	TCHAR szPath[MAX_PATH];
+	GetModuleFileName(NULL,szPath,MAX_PATH);
+	CString strIniPathName(szPath);
+	strIniPathName=strIniPathName.Left(strIniPathName.ReverseFind('\\')+1);
+	strIniPathName += strIniFileName;
+	return strIniPathName;
 }

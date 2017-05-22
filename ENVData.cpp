@@ -34,33 +34,24 @@ CENVData::~CENVData()
 BOOL CENVData::DoInitENV(CString strFileName,vector<ENV>& vecInit)
 {
 	CIniFile cIniFile;
-	vector<CString> vecSecData;
-	vector<CString>::iterator iteData;
+	vector<CString> vecSecData,vecSecName;
+	vector<CString>::iterator iteVecData,iteVecName;
 	struct ENV struInitENV;
 //	vector<ENV>::iterator iteInit;
 //	for(iteData=vecSecData.begin(),iteInit=vecInit.begin();iteData!=vecSecData.end();iteData++,iteInit++)
-	cIniFile.GetSectionString(SECTIONA,vecSecData);
-	for(iteData=vecSecData.begin();iteData!=vecSecData.end();iteData++)
+	cIniFile.GetSectionName(vecSecData,INIFILE);
+	for(iteVecName=vecSecName.begin();iteVecName!=vecSecName.end();iteVecName++)
 	{
-		CString str=*iteData;
-		struInitENV.nCtrlID=_ttoi(str.Left(str.Find('=')));
-		struInitENV.strValue=str.Right(str.GetLength()-str.Find('=')-1);
-		vecInit.push_back(struInitENV);
-	}
-	cIniFile.GetSectionString(SECTIONB,vecSecData);
-	for(iteData=vecSecData.begin();iteData!=vecSecData.end();iteData++)
-	{
-		CString str=*iteData;
-		struInitENV.nCtrlID=_ttoi(str.Left(str.Find('=')));
-		struInitENV.strValue=str.Right(str.GetLength()-str.Find('=')-1);
-		vecInit.push_back(struInitENV);
-	}
-	cIniFile.GetSectionString(SECTIONC,vecSecData);
-	for(iteData=vecSecData.begin();iteData!=vecSecData.end();iteData++)
-	{
-		CString str=*iteData;
-		struInitENV.nCtrlID=_ttoi(str.Left(str.Find('=')));
-		struInitENV.strValue=str.Right(str.GetLength()-str.Find('=')-1);
+		
+		CString str=*iteVecName;
+		cIniFile.GetSectionString(str,vecSecData,strFileName);
+		iteVecData=vecSecData.begin;
+		struInitENV.nCtrlID=_ttoi((*iteVecData).Right((*iteVecData).GetLength()-(*iteVecData).Find('=')));
+		iteVecData++;
+		struInitENV.strValue=(*iteVecData).Right((*iteVecData).GetLength()-(*iteVecData).Find('='));
+		iteVecData++;
+		struInitENV.strContent=(*iteVecData).Right((*iteVecData).GetLength()-(*iteVecData).Find('='));
+		vecSecData.clear();	
 		vecInit.push_back(struInitENV);
 	}
 	return TRUE;
@@ -144,7 +135,7 @@ BOOL CENVData::SetENVVal(WORD nENVCtrlID,CString strValue)
 		{
 			ite->strValue=strValue;
 			CIniFile cIniFile;
-			cIniFile.WriteString(SECTIONA,nENVCtrlID,strValue);
+//			cIniFile.WriteString(SECTIONA,nENVCtrlID,strValue);
 			return TRUE;
 		}
 	}

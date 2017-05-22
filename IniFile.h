@@ -14,13 +14,15 @@ using namespace std;
 class CIniFile  
 {
 public:
-	DWORD GetSectionString(CString strSection,vector<CString>& vecSecData);
+	BOOL GetSectionName(vector<CString>& vecSecName,CString strIniFileName);
+	DWORD GetSectionString(CString strSection,vector<CString>& vecSecData,CString strIniFileName);
 
 //	BOOL WriteString(CString strSection,int nKey, CString strAdd);
 //	DWORD ReadString(CString strSection,int nKey, CString& strRead);
-	BOOL WriteString(CString strSection, CString  strKey, CString& strAdd);
-	DWORD ReadString(CString strSection, CString  strKey, CString& strRead);
-	void MakeIniFile(CString strIniPathName);
+	BOOL WriteString(CString strSection, CString  strKey, CString& strAdd,CString strIniFileName);
+	DWORD ReadString(CString strSection, CString  strKey, CString& strRead,CString strIniFileName);
+	void MakeIniFile(CString strIniFileName);
+	CString GetIniPathName(CString strIniFileName);
 
 	CIniFile();
 	virtual ~CIniFile();
