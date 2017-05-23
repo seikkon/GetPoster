@@ -212,6 +212,7 @@ void CGetposterDlg::OnSysCommand(UINT nID, LPARAM lParam)
 	{
 		CSetupDlg dlgSetup;
 		dlgSetup.DoModal();
+		m_cENV.UpdateAllENV(INIFILE);
 	}
 	else
 	{
@@ -411,9 +412,11 @@ void CGetposterDlg::OnOK()
 		AfxMessageBox("找不到ffmpeg.exe! 请重新设定",MB_OK);
 		CSetupDlg dlg;
 		dlg.SetReadOnly(TRUE);
-		dlg.DoModal();
-//		m_cENV.UpdateENV();
-		strFfmpegPath=m_cENV.GetENVVal(FFMEPGPATH);
+		if(dlg.DoModal()==IDOK)
+		{
+		  m_cENV.UpdateENVVal(FFMEPGPATH);
+  		  strFfmpegPath=m_cENV.GetENVVal(FFMEPGPATH);
+		}
 	}
 
 /*		

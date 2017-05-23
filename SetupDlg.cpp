@@ -94,15 +94,15 @@ void CSetupDlg::OnButtonFindFile()
 	CFileDialog Dlg(TRUE,NULL,"*.*");
 
 	
-	if(Dlg.DoModal()==IDOK)
-	{		//当你找到文件并确定打开时   
+	if(Dlg.DoModal()==IDOK)//当你找到文件并确定打开时
+	{		   
 		CString strFilePath = Dlg.GetPathName();
 		CString strFileName=strFilePath.Right(strFilePath.GetLength()-strFilePath.ReverseFind('\\')-1);
 		strFileName.MakeLower();
 		if(strFileName=="ffmpeg.exe")
 		{
 //			struEnvSetup.strFfmpegDir=strFilePath;
-			m_cENV.SetENVVal(FFMEPGPATH,strFilePath);
+//			m_cENV.SetENVVal(FFMEPGPATH,strFilePath);
 			SetDlgItemText(FFMEPGPATH,strFilePath);
 		}
 		else
@@ -149,40 +149,46 @@ BOOL CSetupDlg::OnInitDialog()
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
 
---id CSetupDlg::OnOK() 
+void CSetupDlg::OnOK()
 {
 	// TODO: Add extra validation here
 
 	CWnd* pChildWnd = this->GetWindow(GW_CHILD);
 	while(pChildWnd!=NULL)
 	{   
-		CHAR szClassName[MAX_PATH];
-		GetClassName(pChildWnd->GetSafeHwnd(), szClassName, MAX_PATH);
-		if(stricmp(szClassName,"Edit")==0)
+		CString strText;
+		pChildWnd->GetWindowText(strText);
+		if(strText.IsEmpty())
 		{
+			AfxMessageBox("设定不能空白！请重新输入",MB_OK);
+			return;
+		}
+		pChildWnd = pChildWnd->GetWindow(GW_HWNDNEXT);
+	}
+	pChildWnd = this->GetWindow(GW_CHILD);
+	while(pChildWnd!=NULL)
+	{   
+//		CHAR szClassName[MAX_PATH];
+//		GetClassName(pChildWnd->GetSafeHwnd(), szClassName, MAX_PATH);
+//		if(stricmp(szClassName,"Edit")==0)
+		if(!m_cENV.GetENVVal(pChildWnd->GetDlgCtrlID()).IsEmpty())
+		{
+			if(pChildWnd->GetDlgCtrlID()==FFMEPGPATH)
+			{
+				CString strText;
+				pChildWnd->GetWindowText(strText);
+				CFileFind file;
+				BOOL bExist=file.FindFile(strText);
+				if(!bExist)
+				{
+					AfxMessageBox("SetupDLG找不到ffmpeg.exe! 请重新设定",MB_OK);
+					return;
+				}
+			}
 			CString strText;
 			pChildWnd->GetWindowText(strText);
-			if(strText.IsEmpty())
-			{
-				AfxMessageBox("设定不能空白！请重新输入",MB_OK);
-				return;
-			}
-			else
-			{
-				if(pChildWnd->GetDlgCtrlID()==FFMEPGPATH)
-				{
-					CString strPath;
-					pChildWnd->GetWindowText(strPath);
-					CFileFind file;
-					BOOL bExist=file.FindFile(strPath);
-					if(!bExist)
-					{
-						AfxMessageBox("找不到ffmpeg.exe! 请重新设定",MB_OK);
-						return;
-					}
-				}
-				m_cENV.SetENVVal(pChildWnd->GetDlgCtrlID(),strText);
-			}
+			m_cENV.SetENVINIVal(pChildWnd->GetDlgCtrlID(),strText);
+
 		}
 		pChildWnd = pChildWnd->GetWindow(GW_HWNDNEXT);
 	}
