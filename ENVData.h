@@ -13,7 +13,7 @@ using namespace std;
 
 struct ENV{
 
-	CString strKey;
+	CString strSection;
 	WORD nCtrlID;
 	CString strValue;
  	CString strContent;

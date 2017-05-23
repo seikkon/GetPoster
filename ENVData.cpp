@@ -39,18 +39,20 @@ BOOL CENVData::DoInitENV(CString strFileName,vector<ENV>& vecInit)
 	struct ENV struInitENV;
 //	vector<ENV>::iterator iteInit;
 //	for(iteData=vecSecData.begin(),iteInit=vecInit.begin();iteData!=vecSecData.end();iteData++,iteInit++)
-	cIniFile.GetSectionName(vecSecData,INIFILE);
+	cIniFile.GetSectionName(vecSecName,INIFILE);
 	for(iteVecName=vecSecName.begin();iteVecName!=vecSecName.end();iteVecName++)
 	{
 		
-		CString str=*iteVecName;
-		cIniFile.GetSectionString(str,vecSecData,strFileName);
-		iteVecData=vecSecData.begin;
-		struInitENV.nCtrlID=_ttoi((*iteVecData).Right((*iteVecData).GetLength()-(*iteVecData).Find('=')));
-		iteVecData++;
-		struInitENV.strValue=(*iteVecData).Right((*iteVecData).GetLength()-(*iteVecData).Find('='));
-		iteVecData++;
-		struInitENV.strContent=(*iteVecData).Right((*iteVecData).GetLength()-(*iteVecData).Find('='));
+		CString strName=*iteVecName;
+		cIniFile.GetSectionString(strName,vecSecData,strFileName);
+		struInitENV.strSection=strName;
+		iteVecData=vecSecData.begin();
+		CString strData=*iteVecData;
+		struInitENV.nCtrlID=_ttoi(strData.Right(strData.GetLength()-strData.Find('=')-1));
+		iteVecData++;strData=*iteVecData;
+		struInitENV.strValue=strData.Right(strData.GetLength()-strData.Find('=')-1);
+		iteVecData++;strData=*iteVecData;
+		struInitENV.strContent=strData.Right(strData.GetLength()-strData.Find('=')-1);
 		vecSecData.clear();	
 		vecInit.push_back(struInitENV);
 	}
@@ -135,7 +137,7 @@ BOOL CENVData::SetENVVal(WORD nENVCtrlID,CString strValue)
 		{
 			ite->strValue=strValue;
 			CIniFile cIniFile;
-//			cIniFile.WriteString(SECTIONA,nENVCtrlID,strValue);
+ 			cIniFile.WriteString(ite->strSection,VALUE,strValue,INIFILE);
 			return TRUE;
 		}
 	}

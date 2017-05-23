@@ -15,9 +15,9 @@
 #define __VC6_ATL_IMAGE_H__ 1  
 
 
-#define SECTIONA _T("ControlID")
-#define SECTIONB _T("Value")
-#define SECTIONC _T("Content")
+#define CTRLID _T("CtrlID")
+#define VALUE _T("Value")
+#define CONTENT _T("Content")
 #define INIFILE _T("setinfo.ini")
 #define PLAYMARK _T("playmark_50.png")
 #define FFMPEG _T("ffmpeg.exe")

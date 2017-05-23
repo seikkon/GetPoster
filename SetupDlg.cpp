@@ -149,27 +149,43 @@ BOOL CSetupDlg::OnInitDialog()
 	// EXCEPTION: OCX Property Pages should return FALSE
 }
 
-void CSetupDlg::OnOK() 
+--id CSetupDlg::OnOK() 
 {
 	// TODO: Add extra validation here
 
 	CWnd* pChildWnd = this->GetWindow(GW_CHILD);
-	while(pChildWnd != NULL)
+	while(pChildWnd!=NULL)
 	{   
-		CString strText;
-		pChildWnd->GetWindowText(strText);
-		if(strText.IsEmpty())
+		CHAR szClassName[MAX_PATH];
+		GetClassName(pChildWnd->GetSafeHwnd(), szClassName, MAX_PATH);
+		if(stricmp(szClassName,"Edit")==0)
 		{
-			AfxMessageBox("设定不能空白！请重新输入",MB_OK);
-			return;
-		}
-		else
-		{
-			m_cENV.SetENVVal(pChildWnd->GetDlgCtrlID(),strText);
+			CString strText;
+			pChildWnd->GetWindowText(strText);
+			if(strText.IsEmpty())
+			{
+				AfxMessageBox("设定不能空白！请重新输入",MB_OK);
+				return;
+			}
+			else
+			{
+				if(pChildWnd->GetDlgCtrlID()==FFMEPGPATH)
+				{
+					CString strPath;
+					pChildWnd->GetWindowText(strPath);
+					CFileFind file;
+					BOOL bExist=file.FindFile(strPath);
+					if(!bExist)
+					{
+						AfxMessageBox("找不到ffmpeg.exe! 请重新设定",MB_OK);
+						return;
+					}
+				}
+				m_cENV.SetENVVal(pChildWnd->GetDlgCtrlID(),strText);
+			}
 		}
 		pChildWnd = pChildWnd->GetWindow(GW_HWNDNEXT);
 	}
-//	m_cENV.SaveToFile();
 
 	CDialog::OnOK();
 }
