@@ -62,6 +62,7 @@ protected:
 	afx_msg void OnItemexpandedTree(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnSelchangedTree(NMHDR* pNMHDR, LRESULT* pResult);
 	virtual void OnOK();
+	afx_msg void OnButtonRun();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

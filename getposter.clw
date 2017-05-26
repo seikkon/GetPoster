@@ -2,7 +2,7 @@
 
 [General Info]
 Version=1
-LastClass=CSetupDlg
+LastClass=CGetposterDlg
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "getposter.h"
@@ -30,7 +30,7 @@ Type=0
 HeaderFile=getposterDlg.h
 ImplementationFile=getposterDlg.cpp
 Filter=D
-LastObject=CGetposterDlg
+LastObject=IDC_BUTTON_RUN
 BaseClass=CDialog
 VirtualFilter=dWC
 
@@ -53,14 +53,15 @@ Control4=IDOK,button,1342373889
 [DLG:IDD_GETPOSTER_DIALOG]
 Type=1
 Class=CGetposterDlg
-ControlCount=7
+ControlCount=8
 Control1=IDOK,button,1342242817
 Control2=IDCANCEL,button,1342242816
 Control3=IDC_TREE,SysTreeView32,1350631424
 Control4=IDC_LIST,SysListView32,1350631424
-Control5=IDC_RICHEDIT,RICHEDIT,1350631552
-Control6=IDC_RICHEDIT1,RICHEDIT,1484851328
+Control5=IDC_RICHEDIT_LOG,RICHEDIT,1350631552
+Control6=IDC_RICHEDIT_INI,RICHEDIT,1484851328
 Control7=IDC_EDIT_PATH,edit,1350633600
+Control8=IDC_BUTTON_RUN,button,1342242816
 
 [DLG:IDD_SETUP_DIALOG]
 Type=1
